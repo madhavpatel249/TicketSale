@@ -8,6 +8,7 @@ import Login from './components/Login';
 import Navbar from './components/Navbar'; 
 import HostEvent from './components/HostEvent';
 import BrowseEvents from './components/BrowseEvents';
+import SingleEvent from './components/SingleEvent';
 
 function App() {
   return (
@@ -20,7 +21,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/host-event" element={<HostEvent />} />
         <Route path="/browse-events" element={<BrowseEvents />} />
-
+        <Route path="/events/:id" element={<SingleEvent />} />
+        
       </Routes>
     </Router>
   );
