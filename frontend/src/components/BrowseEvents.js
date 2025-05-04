@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; // import Link
 import Navbar from './Navbar';
 
 function BrowseEvents() {
@@ -63,21 +64,23 @@ function BrowseEvents() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredEvents.map(event => (
-            <div key={event._id} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition">
-              <div className="w-full h-40 bg-gray-300 rounded overflow-hidden">
-                <img
-                  src={event.image || ''}
-                  alt={event.title}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                  }}
-                />
+            <Link to={`/events/${event._id}`} key={event._id}>
+              <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition cursor-pointer">
+                <div className="w-full h-40 bg-gray-300 rounded overflow-hidden">
+                  <img
+                    src={event.image || ''}
+                    alt={event.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+                <h3 className="text-xl font-semibold mt-4 text-[#0E131F]">{event.title}</h3>
+                <p className="text-gray-600">{new Date(event.date).toLocaleDateString()}</p>
+                <p className="text-gray-600">{event.location}</p>
               </div>
-              <h3 className="text-xl font-semibold mt-4 text-[#0E131F]">{event.title}</h3>
-              <p className="text-gray-600">{new Date(event.date).toLocaleDateString()}</p>
-              <p className="text-gray-600">{event.location}</p>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

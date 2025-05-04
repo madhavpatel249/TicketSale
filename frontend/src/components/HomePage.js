@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Navbar from './Navbar';
 import EventGallery from './EventGallery';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../components/AuthContext';
 
 function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   const handleHostEventClick = () => {
     navigate('/host-event');
@@ -28,12 +30,14 @@ function HomePage() {
             Concerts, Sports, Theater — Everything Near You
           </p>
           <div className="flex justify-center space-x-4">
-            <button
-              onClick={handleHostEventClick}
-              className="px-6 py-3 bg-[#38405F] text-white rounded-full font-semibold hover:bg-[#0E131F] transition-all duration-300"
-            >
-              Host an Event
-            </button>
+            {(!user || user.role === 'host') && (
+              <button
+                onClick={handleHostEventClick}
+                className="px-6 py-3 bg-[#38405F] text-white rounded-full font-semibold hover:bg-[#0E131F] transition-all duration-300"
+              >
+                Host an Event
+              </button>
+            )}
             <button
               onClick={handleBrowseEventsClick}
               className="px-6 py-3 bg-[#38405F] text-white rounded-full font-semibold hover:bg-[#0E131F] transition-all duration-300"

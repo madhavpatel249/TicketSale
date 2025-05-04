@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../components/AuthContext'; 
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext); 
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -15,29 +17,26 @@ function Login() {
         username,
         password,
       });
-  
-      // Save the JWT token to localStorage
-      localStorage.setItem('token', response.data.token);
-  
-      console.log('Login successful:', response.data);
-      navigate('/home'); 
+
+      
+      login(response.data.user, response.data.token);
+
+      
+      navigate('/');
     } catch (err) {
       console.error('Error logging in:', err);
       setError(err.response?.data?.message || 'Login failed');
     }
   };
-  
 
   const handleSignupClick = () => {
-    navigate('/signup'); 
+    navigate('/signup');
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-[#6f1ab1] mb-6">
-          Login
-        </h2>
+        <h2 className="text-2xl font-bold text-center text-[#6f1ab1] mb-6">Login</h2>
         {error && <p className="text-red-500 text-center">{error}</p>}
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
