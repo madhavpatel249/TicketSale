@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 
-// POST a new event
+
 router.post('/', async (req, res) => {
   try {
     const newEvent = new Event(req.body);
@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET all events
+
 router.get('/', async (req, res) => {
   try {
     const events = await Event.find();
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single event by ID
+
 router.get('/:id', async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);

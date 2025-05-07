@@ -1,9 +1,15 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
 function Navbar({ scrolled }) {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav
@@ -24,7 +30,6 @@ function Navbar({ scrolled }) {
 
         
         <div className="flex space-x-5 items-center">
-          
           {(!user || user.role === 'host') && (
             <Link
               to="/host-event"
@@ -37,13 +42,19 @@ function Navbar({ scrolled }) {
           {user ? (
             <>
               <Link
+                to="/my-cart"
+                className="text-lg px-5 py-3 rounded-full border border-transparent hover:border-gray-300 hover:bg-[#38405F] hover:text-white transition-all duration-300 text-white"
+              >
+                My Cart
+              </Link>
+              <Link
                 to="/profile"
                 className="text-lg px-5 py-3 rounded-full border border-transparent hover:border-gray-300 hover:bg-[#38405F] hover:text-white transition-all duration-300 text-white"
               >
                 My Profile
               </Link>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="text-lg px-5 py-3 rounded-full bg-white text-[#0E131F] hover:bg-gray-100 transition-all duration-300"
               >
                 Log Out

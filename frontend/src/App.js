@@ -9,6 +9,8 @@ import Navbar from './components/Navbar';
 import HostEvent from './components/HostEvent';
 import BrowseEvents from './components/BrowseEvents';
 import SingleEvent from './components/SingleEvent';
+import MyCart from './components/MyCart';
+import Profile from './components/Profile'
 
 function App() {
   return (
@@ -22,7 +24,8 @@ function App() {
         <Route path="/host-event" element={<HostEvent />} />
         <Route path="/browse-events" element={<BrowseEvents />} />
         <Route path="/events/:id" element={<SingleEvent />} />
-        
+        <Route path="/my-cart" element={<MyCart />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );

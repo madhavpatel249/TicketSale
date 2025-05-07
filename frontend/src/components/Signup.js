@@ -6,7 +6,7 @@ function Signup() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('attendee'); // Default role
+  const [role, setRole] = useState('attendee'); 
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
@@ -19,6 +19,7 @@ function Signup() {
         role, 
       });
       console.log('Signup successful:', response.data);
+      navigate('/login');
       
     } catch (error) {
       console.error('Error signing up:', error.response?.data || error.message);

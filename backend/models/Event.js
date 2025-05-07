@@ -5,7 +5,7 @@ const eventSchema = new mongoose.Schema({
   date: String,
   location: String,
   image: String,
-  category: String, // concert, sports, theater
+  category: String, 
 });
 
 const Event = mongoose.model('Event', eventSchema);

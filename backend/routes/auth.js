@@ -6,7 +6,7 @@ const User = require('../models/User');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; 
 
-// Login route
+
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -20,15 +20,15 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    // Compare the entered password with the hashed password from the database
+    
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
-      // Generate JWT token
+      
       const token = jwt.sign({ id: user._id, username: user.username }, JWT_SECRET, {
-        expiresIn: '1h', // Token expires in 1 hour; change this later
+        expiresIn: '1h', 
       });
 
-      // Return token and user info to the client
+      
       return res.status(200).json({ 
         message: "Login successful!", 
         token, 
