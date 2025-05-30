@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import "./EventGallery.css";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const EventGallery = () => {
   const [events, setEvents] = useState([]);
+  const scrollRef = useRef(null);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -15,31 +17,46 @@ const EventGallery = () => {
         console.error("Error fetching events:", error);
       }
     };
-
     fetchEvents();
   }, []);
 
-  const concerts = events.filter(event => event.category === "concert");
-  const sports = events.filter(event => event.category === "sports");
+  const getScrollAmount = () => {
+    const visibleCards = Math.min(events.length, 5); 
+    return 260 * visibleCards;
+  };
+
+  const scroll = (direction) => {
+    const { current } = scrollRef;
+    if (current) {
+      const maxScroll = current.scrollWidth - current.clientWidth;
+      let newScrollPosition =
+        scrollPosition + (direction === "left" ? -getScrollAmount() : getScrollAmount());
+
+      newScrollPosition = Math.max(0, Math.min(newScrollPosition, maxScroll));
+
+      current.scrollTo({ left: newScrollPosition, behavior: "smooth" });
+      setScrollPosition(newScrollPosition);
+    }
+  };
 
   const renderEventCard = (event) => (
-    <Link to={`/events/${event._id}`} key={event._id} className="w-[250px]">
-      <div className="bg-white rounded-xl overflow-hidden shadow hover:shadow-lg transition w-full">
-        <div className="w-full h-[140px] bg-gray-300">
+    <Link to={`/events/${event._id}`} key={event._id} className="flex-shrink-0 w-[250px] animate-fade-in">
+      <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ease-in-out group">
+        <div className="w-full h-[140px] bg-gray-200 relative overflow-hidden">
           <img
             src={event.image || ''}
             alt={event.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             onError={(e) => {
               e.target.style.display = 'none';
             }}
           />
         </div>
         <div className="p-4">
-          <h3 className="text-base font-semibold text-[#0E131F] line-clamp-2 mb-1">{event.title}</h3>
-          <p className="text-sm text-gray-500 mb-1">{new Date(event.date).toLocaleDateString()}</p>
-          <p className="text-sm text-gray-500 mb-2 line-clamp-1">{event.location}</p>
-          <div className="text-sm px-3 py-1 bg-[#38405F] text-white rounded-full text-center hover:bg-[#0E131F] transition duration-300 inline-block">
+          <h3 className="text-base font-medium text-primary mb-1 line-clamp-1">{event.title}</h3>
+          <p className="text-sm text-darkGray mb-1">{new Date(event.date).toLocaleDateString()}</p>
+          <p className="text-sm text-darkGray mb-3 line-clamp-1">{event.location}</p>
+          <div className="text-sm px-4 py-2 bg-primary text-white rounded-md text-center hover:bg-primary/90 transition-colors duration-200">
             View Event
           </div>
         </div>
@@ -48,15 +65,34 @@ const EventGallery = () => {
   );
 
   return (
-    <div className="mt-12 px-10 xl:px-20">
-      <h2 className="text-2xl font-bold text-[#0E131F] mb-4">Popular Concerts</h2>
-      <div className="flex flex-wrap gap-6 justify-start mb-10">
-        {concerts.map(renderEventCard)}
-      </div>
-
-      <h2 className="text-2xl font-bold text-[#0E131F] mb-4">Sports Tickets Near You</h2>
-      <div className="flex flex-wrap gap-6 justify-start mb-10">
-        {sports.map(renderEventCard)}
+    <div className="mt-12 px-8 xl:px-16 animate-slide-up">
+      <h2 className="text-2xl font-bold text-primary mb-6">Sports Tickets Near You</h2>
+      <div className="relative">
+        {events.length > 5 && (
+          <button
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-primary/90 text-white p-2 rounded-full shadow-sm hover:bg-primary hover:shadow-md transition-all duration-200"
+            onClick={() => scroll("left")}
+            style={{ zIndex: 10 }}
+          >
+            <ChevronLeft size={20} />
+          </button>
+        )}
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-scroll scroll-smooth p-4 rounded-lg"
+          style={{ scrollSnapType: "x mandatory", overflow: "hidden" }}
+        >
+          {events.filter(event => event.category === "sports").map(renderEventCard)}
+        </div>
+        {events.length > 5 && (
+          <button
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-primary/90 text-white p-2 rounded-full shadow-sm hover:bg-primary hover:shadow-md transition-all duration-200"
+            onClick={() => scroll("right")}
+            style={{ zIndex: 10 }}
+          >
+            <ChevronRight size={20} />
+          </button>
+        )}
       </div>
     </div>
   );

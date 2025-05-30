@@ -6,16 +6,19 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
 
   const addToCart = (event, type) => {
-    setCart(prev => [...prev, { eventId: event._id, title: event.title, type }]);
+    setCart(prev => [...prev, { 
+      eventId: event._id, 
+      title: event.title, 
+      type,
+      price: type === 'vip' ? event.vipPrice : event.generalPrice
+    }]);
   };
 
   const removeFromCart = (eventId) => {
     setCart(prev => prev.filter(item => item.eventId !== eventId));
   };
 
-  const clearCart = () => {
-    setCart([]);
-  };
+  const clearCart = () => setCart([]);
 
   return (
     <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>

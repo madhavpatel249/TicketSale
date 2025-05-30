@@ -17,8 +17,30 @@ code {
     monospace;
 }
 
-/* Add this to your index.css or global stylesheet
-.clip-path-diagonal {
-  clip-path: polygon(0 0, 100% 0, 100% 0%, 0 100%);
-} */
+html,
+body,
+.scrollbar-hide {
+  overflow-y: scroll; 
+  -ms-overflow-style: none;  
+  scrollbar-width: none;     
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; 
+}
+
+@keyframes floating {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-35px); /* Increased distance for more noticeable movement */
+  }
+}
+
+.animate-floating {
+  animation: floating 2.5s infinite ease-in-out;
+}
+
 

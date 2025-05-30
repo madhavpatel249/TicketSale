@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthContext';
 
-function Navbar({ scrolled }) {
+function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -11,62 +11,33 @@ function Navbar({ scrolled }) {
     navigate('/');
   };
 
-  return (
-    <nav
-      className={`fixed top-0 left-0 w-full py-6 px-8 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-[#38405F] shadow-md' : 'bg-[#0E131F]'
-      }`}
-    >
-      <div className="container mx-auto flex justify-between items-center rounded-full">
-        
-        <div className="flex items-center">
-          <Link
-            to="/"
-            className="text-lg px-5 py-3 rounded-full border border-transparent hover:border-gray-300 hover:bg-[#38405F] hover:text-white transition-all duration-300 text-white"
-          >
-            Home
-          </Link>
-        </div>
+  const navLinkClass = "px-4 py-2 rounded-md text-white hover:bg-secondary/80 transition-all duration-200 hover:scale-105";
+  const buttonClass = "px-4 py-2 rounded-md text-white bg-warning hover:bg-warning/90 active:bg-warning/80 transition-all duration-200 hover:scale-105";
 
-        
-        <div className="flex space-x-5 items-center">
+  return (
+    <nav className="fixed top-0 left-0 w-full py-4 px-6 z-50 bg-primary/95 backdrop-blur-sm shadow-sm">
+      <div className="container mx-auto flex justify-between items-center">
+        <Link to="/" className="text-white text-xl font-semibold tracking-wide hover:text-accent transition-colors">
+          Evently
+        </Link>
+
+        <div className="flex space-x-4 items-center">
           {(!user || user.role === 'host') && (
-            <Link
-              to="/host-event"
-              className="text-lg px-5 py-3 rounded-full border border-transparent hover:border-gray-300 hover:bg-[#38405F] hover:text-white transition-all duration-300 text-white"
-            >
+            <Link to="/host-event" className={navLinkClass}>
               Host Event
             </Link>
           )}
 
           {user ? (
             <>
-              <Link
-                to="/my-cart"
-                className="text-lg px-5 py-3 rounded-full border border-transparent hover:border-gray-300 hover:bg-[#38405F] hover:text-white transition-all duration-300 text-white"
-              >
-                My Cart
-              </Link>
-              <Link
-                to="/profile"
-                className="text-lg px-5 py-3 rounded-full border border-transparent hover:border-gray-300 hover:bg-[#38405F] hover:text-white transition-all duration-300 text-white"
-              >
-                My Profile
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="text-lg px-5 py-3 rounded-full bg-white text-[#0E131F] hover:bg-gray-100 transition-all duration-300"
-              >
+              <Link to="/my-cart" className={navLinkClass}>My Cart</Link>
+              <Link to="/profile" className={navLinkClass}>Profile</Link>
+              <button onClick={handleLogout} className={buttonClass}>
                 Log Out
               </button>
             </>
           ) : (
-            <Link
-              to="/register"
-              className="text-lg px-5 py-3 rounded-full border border-transparent hover:border-gray-300 hover:bg-[#38405F] hover:text-white transition-all duration-300 text-white"
-            >
-              Register
-            </Link>
+            <Link to="/register" className={navLinkClass}>Register</Link>
           )}
         </div>
       </div>

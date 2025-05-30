@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
+import { Search, Filter, Calendar, MapPin, Tag, RefreshCw } from 'lucide-react';
 
 function BrowseEvents() {
   const [events, setEvents] = useState([]);
   const [filter, setFilter] = useState({ category: '', country: '', sort: 'date' });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -14,6 +16,8 @@ function BrowseEvents() {
         setEvents(res.data);
       } catch (err) {
         console.error('Error fetching events:', err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchEvents();
@@ -29,60 +33,127 @@ function BrowseEvents() {
       return 0;
     });
 
+  const resetFilters = () => {
+    setFilter({ category: '', country: '', sort: 'date' });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 pt-24">
+    <div className="min-h-screen bg-lightGray pt-24 pb-12">
       <Navbar />
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <h2 className="text-3xl font-bold text-[#0E131F] mb-6 text-center">Browse All Events</h2>
+      <div className="max-w-7xl mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center text-primary mb-10 animate-fade-in">
+          Browse All Events
+        </h2>
 
-        <div className="flex flex-wrap justify-center gap-4 mb-6">
-          <select
-            className="px-4 py-2 rounded border border-gray-300"
-            value={filter.category}
-            onChange={(e) => setFilter({ ...filter, category: e.target.value })}
-          >
-            <option value="">All Categories</option>
-            <option value="concert">Concert</option>
-            <option value="sports">Sports</option>
-            <option value="theater">Theater</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Search by country"
-            className="px-4 py-2 rounded border border-gray-300"
-            value={filter.country}
-            onChange={(e) => setFilter({ ...filter, country: e.target.value })}
-          />
-          <select
-            className="px-4 py-2 rounded border border-gray-300"
-            value={filter.sort}
-            onChange={(e) => setFilter({ ...filter, sort: e.target.value })}
-          >
-            <option value="date">Date (Soonest First)</option>
-          </select>
+        <div className="bg-white p-6 rounded-xl shadow-sm mb-10 animate-fade-in">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex-1 min-w-[200px]">
+              <label className="flex items-center gap-2 text-sm font-medium text-primary mb-2">
+                <Tag size={16} />
+                Category
+              </label>
+              <select
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                value={filter.category}
+                onChange={(e) => setFilter({ ...filter, category: e.target.value })}
+              >
+                <option value="">All Categories</option>
+                <option value="concert">Concert</option>
+                <option value="sports">Sports</option>
+                <option value="theater">Theater</option>
+              </select>
+            </div>
+
+            <div className="flex-1 min-w-[200px]">
+              <label className="flex items-center gap-2 text-sm font-medium text-primary mb-2">
+                <MapPin size={16} />
+                Location
+              </label>
+              <input
+                type="text"
+                placeholder="Search by country"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                value={filter.country}
+                onChange={(e) => setFilter({ ...filter, country: e.target.value })}
+              />
+            </div>
+
+            <div className="flex-1 min-w-[200px]">
+              <label className="flex items-center gap-2 text-sm font-medium text-primary mb-2">
+                <Calendar size={16} />
+                Sort By
+              </label>
+              <select
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                value={filter.sort}
+                onChange={(e) => setFilter({ ...filter, sort: e.target.value })}
+              >
+                <option value="date">Date (Soonest First)</option>
+              </select>
+            </div>
+
+            <div className="flex items-end">
+              <button
+                onClick={resetFilters}
+                className="px-4 py-2.5 bg-gray-100 text-darkGray rounded-lg hover:bg-gray-200 active:bg-gray-300 transition-all duration-200 font-medium flex items-center gap-2"
+              >
+                <RefreshCw size={16} />
+                Reset
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredEvents.map(event => (
-            <Link to={`/events/${event._id}`} key={event._id}>
-              <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition cursor-pointer">
-                <div className="w-full h-40 bg-gray-300 rounded overflow-hidden">
-                  <img
-                    src={event.image || ''}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                    }}
-                  />
+        {loading ? (
+          <div className="text-center text-darkGray animate-fade-in">
+            Loading events...
+          </div>
+        ) : filteredEvents.length === 0 ? (
+          <div className="text-center text-darkGray animate-fade-in">
+            No events found matching your criteria.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
+            {filteredEvents.map(event => (
+              <Link to={`/events/${event._id}`} key={event._id}>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 overflow-hidden group">
+                  <div className="w-full h-48 bg-gray-100 relative overflow-hidden">
+                    <img
+                      src={event.image || ''}
+                      alt={event.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  </div>
+
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-primary mb-2 line-clamp-1">{event.title}</h3>
+                    <div className="space-y-2 text-darkGray">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} />
+                        <span className="text-sm">{new Date(event.date).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin size={16} />
+                        <span className="text-sm line-clamp-1">{event.location}</span>
+                      </div>
+                    </div>
+
+                    {event.pricing && (
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <p className="text-sm font-medium text-secondary">
+                          From ${Math.min(...Object.values(event.pricing)) || 0}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <h3 className="text-xl font-semibold mt-4 text-[#0E131F]">{event.title}</h3>
-                <p className="text-gray-600">{new Date(event.date).toLocaleDateString()}</p>
-                <p className="text-gray-600">{event.location}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

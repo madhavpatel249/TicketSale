@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
 import { AuthContext } from '../components/AuthContext';
+import { CalendarDays, MapPin, Ticket, User, AlertCircle } from 'lucide-react';
+import Confetti from 'react-confetti';
 
 function Profile() {
   const { user, token } = useContext(AuthContext);
@@ -9,19 +11,19 @@ function Profile() {
   const [eventsMap, setEventsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     const fetchTickets = async () => {
       if (!user || !token) return;
-
       try {
         const res = await axios.get(`http://localhost:5000/api/users/${user.id}/tickets`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
-        setTickets(res.data.tickets);
+        const rawTickets = res.data.tickets;
+        const eventIds = [...new Set(rawTickets.map(t => t.eventId))];
 
-        const eventIds = [...new Set(res.data.tickets.map(t => t.eventId))];
         const responses = await Promise.all(eventIds.map(id =>
           axios.get(`http://localhost:5000/api/events/${id}`)
         ));
@@ -31,7 +33,19 @@ function Profile() {
           map[res.data._id] = res.data;
         });
 
+        rawTickets.sort((a, b) => {
+          const dateA = new Date(map[a.eventId]?.date || 0);
+          const dateB = new Date(map[b.eventId]?.date || 0);
+          return dateA - dateB;
+        });
+
+        if (tickets.length > 0 && rawTickets.length > tickets.length) {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 3000);
+        }
+
         setEventsMap(map);
+        setTickets(rawTickets);
         setError('');
       } catch (err) {
         console.error('Failed to fetch tickets:', err);
@@ -44,43 +58,98 @@ function Profile() {
     fetchTickets();
   }, [user, token]);
 
+  const groupTicketsByMonth = () => {
+    const groups = {};
+    tickets.forEach(ticket => {
+      const event = eventsMap[ticket.eventId];
+      if (!event) return;
+
+      const eventDate = new Date(event.date);
+      const monthYear = eventDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+      if (!groups[monthYear]) groups[monthYear] = [];
+      groups[monthYear].push({ ticket, event });
+    });
+    return groups;
+  };
+
+  const groupedTickets = groupTicketsByMonth();
+
   return (
-    <div className="min-h-screen bg-gray-100 pt-24">
+    <div className="min-h-screen bg-lightGray pt-24 pb-12">
       <Navbar />
-      <div className="max-w-4xl mx-auto px-4 py-10">
-        <h2 className="text-3xl font-bold text-[#0E131F] mb-6">My Tickets</h2>
+      {showConfetti && <Confetti />}
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-primary flex items-center gap-2">
+            <User size={24} />
+            My Tickets
+          </h2>
+        </div>
 
         {loading ? (
-          <p className="text-gray-600">Loading your tickets...</p>
+          <div className="text-center text-darkGray animate-fade-in">
+            Loading your tickets...
+          </div>
         ) : error ? (
-          <p className="text-red-500">{error}</p>
+          <div className="flex items-center gap-2 text-warning bg-warning/10 p-3 rounded-lg animate-fade-in">
+            <AlertCircle size={18} />
+            <p className="text-sm">{error}</p>
+          </div>
         ) : tickets.length === 0 ? (
-          <p className="text-gray-600">You haven’t purchased any tickets yet.</p>
+          <div className="text-center text-darkGray animate-fade-in">
+            You haven't purchased any tickets yet.
+          </div>
         ) : (
-          <ul className="grid sm:grid-cols-2 gap-6">
-            {tickets.map((ticket, index) => {
-              const event = eventsMap[ticket.eventId];
-              return (
-                <li key={index} className="bg-white p-5 rounded-lg shadow border border-gray-200">
-                  <p className="text-lg font-semibold text-[#38405F]">
-                    {event?.title || 'Event not found'}
-                  </p>
-                  {event && (
-                    <>
-                      <p className="text-sm text-gray-700">
-                        Date: {new Date(event.date).toLocaleDateString()}
+          Object.entries(groupedTickets).map(([monthYear, items]) => (
+            <div key={monthYear} className="mb-10 animate-fade-in">
+              <h3 className="text-xl font-semibold text-primary mb-6">{monthYear}</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {items.map(({ ticket, event }, index) => (
+                  <div
+                    key={index}
+                    className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200"
+                  >
+                    <div className="w-full h-40 bg-gray-100 rounded-lg overflow-hidden mb-4">
+                      {event.image ? (
+                        <img
+                          src={event.image}
+                          alt={event.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => (e.target.style.display = 'none')}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200"></div>
+                      )}
+                    </div>
+
+                    <h4 className="text-lg font-semibold text-primary mb-3">{event.title}</h4>
+                    
+                    <div className="space-y-2 text-darkGray">
+                      <div className="flex items-center gap-2">
+                        <CalendarDays size={16} />
+                        <span className="text-sm">{new Date(event.date).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin size={16} />
+                        <span className="text-sm">{event.location}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-secondary">
+                        <Ticket size={16} />
+                        <span className="text-sm font-medium">{ticket.type.toUpperCase()} Ticket</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-gray-100">
+                      <p className="text-xs text-darkGray">
+                        Purchased: {new Date(ticket.purchasedAt).toLocaleDateString()}
                       </p>
-                      <p className="text-sm text-gray-700">Location: {event.location}</p>
-                    </>
-                  )}
-                  <p className="text-sm text-gray-700">Ticket Type: {ticket.type}</p>
-                  <p className="text-sm text-gray-500">
-                    Purchased: {new Date(ticket.purchasedAt).toLocaleDateString()}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
         )}
       </div>
     </div>
