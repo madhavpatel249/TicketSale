@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import apiClient from './services/apiService';
 import { AuthContext } from '../components/AuthContext';
 import { User, Lock, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await apiClient.post('/api/auth/login', {
         username,
         password,
       });
@@ -30,25 +31,74 @@ function Login() {
     navigate('/signup');
   };
 
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-lightGray pt-24 pb-12">
-      <div className="bg-white p-8 rounded-xl shadow-sm w-full max-w-md animate-fade-in">
-        <h2 className="text-2xl font-bold text-center text-primary mb-8">Welcome Back</h2>
-        
-        {error && (
-          <div className="flex items-center gap-2 text-warning bg-warning/10 p-3 rounded-lg mb-6">
-            <AlertCircle size={18} />
-            <p className="text-sm">{error}</p>
-          </div>
-        )}
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1
+      }
+    }
+  };
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-2">
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    }
+  };
+
+  return (
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="flex items-center justify-center min-h-screen bg-lightGray pt-24 pb-12"
+    >
+      <motion.div 
+        variants={itemVariants}
+        className="bg-white p-8 rounded-xl shadow-sm w-full max-w-md"
+      >
+        <motion.h2 
+          variants={itemVariants}
+          className="text-2xl font-bold text-center text-primary mb-8"
+        >
+          Welcome Back
+        </motion.h2>
+        
+        <AnimatePresence>
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="flex items-center gap-2 text-warning bg-warning/10 p-3 rounded-lg mb-6"
+            >
+              <AlertCircle size={18} />
+              <p className="text-sm">{error}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <motion.form 
+          variants={itemVariants}
+          onSubmit={handleLogin} 
+          className="space-y-6"
+        >
+          <motion.div variants={itemVariants} className="space-y-2">
             <label htmlFor="username" className="flex items-center gap-2 text-sm font-medium text-primary">
               <User size={16} />
               Username
             </label>
-            <input
+            <motion.input
+              whileFocus={{ scale: 1.01 }}
               type="text"
               id="username"
               value={username}
@@ -57,14 +107,15 @@ function Login() {
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
               placeholder="Enter your username"
             />
-          </div>
+          </motion.div>
 
-          <div className="space-y-2">
+          <motion.div variants={itemVariants} className="space-y-2">
             <label htmlFor="password" className="flex items-center gap-2 text-sm font-medium text-primary">
               <Lock size={16} />
               Password
             </label>
-            <input
+            <motion.input
+              whileFocus={{ scale: 1.01 }}
               type="password"
               id="password"
               value={password}
@@ -73,27 +124,35 @@ function Login() {
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
               placeholder="Enter your password"
             />
-          </div>
+          </motion.div>
 
-          <button
+          <motion.button
+            variants={itemVariants}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
             className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
           >
             Log In
-          </button>
-        </form>
+          </motion.button>
+        </motion.form>
 
-        <p className="text-center text-sm text-darkGray mt-6">
+        <motion.p 
+          variants={itemVariants}
+          className="text-center text-sm text-darkGray mt-6"
+        >
           Don't have an account?{' '}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={handleSignupClick}
             className="text-secondary hover:text-secondary/80 font-medium transition-colors duration-200"
           >
             Sign Up
-          </button>
-        </p>
-      </div>
-    </div>
+          </motion.button>
+        </motion.p>
+      </motion.div>
+    </motion.div>
   );
 }
 

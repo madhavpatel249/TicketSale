@@ -3,14 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
 
-// Import routes with adjusted paths
+
 const eventRoutes = require('../routes/events');
 const authRoutes = require('../routes/auth');
 const userRoutes = require('../routes/users');
 
 const app = express();
 
-// --- Database Connection ---
+
 let dbConnectionPromise = null;
 
 const connectDB = async () => {
@@ -33,7 +33,7 @@ const connectDB = async () => {
 
 connectDB().catch(err => console.error("MongoDB connection failed:", err.message));
 
-// --- Middleware ---
+
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
@@ -53,7 +53,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// --- Routes ---
+
 app.use(async (req, res, next) => {
   try {
     await connectDB();
@@ -69,7 +69,7 @@ app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => res.send('API is running'));
 
-// --- Error handling middleware ---
+      
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: 'Internal server error' });
