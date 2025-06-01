@@ -10,10 +10,14 @@ function Signup() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('attendee');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
       const response = await apiClient.post('/api/users/signup', {
         username,
@@ -25,7 +29,12 @@ function Signup() {
       navigate('/login');
     } catch (error) {
       console.error('Error signing up:', error.response?.data || error.message);
-      setError(error.response?.data?.message || 'Signup failed. Please try again.');
+      const errorMessage = error.response?.data?.error || 
+                         error.response?.data?.details?.join(', ') || 
+                         'Signup failed. Please try again.';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 

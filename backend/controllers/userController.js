@@ -5,7 +5,30 @@ const User = require('../models/User');
 exports.signup = async (req, res) => {
   const { username, email, password, role } = req.body;
 
+  // Input validation
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
+
+  if (username.length < 3 || username.length > 30) {
+    return res.status(400).json({ error: 'Username must be between 3 and 30 characters' });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+  }
+
+  if (!email.includes('@')) {
+    return res.status(400).json({ error: 'Invalid email format' });
+  }
+
+  // Validate role
+  if (role && !['host', 'attendee'].includes(role)) {
+    return res.status(400).json({ error: 'Invalid role. Must be either "host" or "attendee"' });
+  }
+
   try {
+    // Check for existing user
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       return res.status(409).json({ 
@@ -13,22 +36,45 @@ exports.signup = async (req, res) => {
       });
     }
 
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    await User.create({
+    // Create new user
+    const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
-      role: role || 'user',
+      role: role || 'attendee',
       tickets: [],
       cart: []
     });
 
-    res.status(201).json({ message: 'User created' });
+    // Remove password from response
+    const userResponse = {
+      id: newUser._id,
+      username: newUser.username,
+      email: newUser.email,
+      role: newUser.role
+    };
+
+    res.status(201).json({ 
+      message: 'User created successfully',
+      user: userResponse
+    });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'Server error' });
+    // Check for specific MongoDB errors
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ 
+        error: 'Validation error',
+        details: Object.values(error.errors).map(err => err.message)
+      });
+    }
+    if (error.code === 11000) {
+      return res.status(409).json({ error: 'Username or email already exists' });
+    }
+    res.status(500).json({ error: 'Server error', details: error.message });
   }
 };
 
