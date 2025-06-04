@@ -54,12 +54,6 @@ Evently is a practice project inspired by Ticketmaster, built to strengthen my s
 
 ---
 
-## 🚀 Live Demo
-
-🔗 **Check it out here:** [https://ticketsale-xi.vercel.app](https://ticketsale-xi.vercel.app)
-
----
-
 ## 💻 Run Locally
 
 Follow the steps below to run the project on your local machine.
