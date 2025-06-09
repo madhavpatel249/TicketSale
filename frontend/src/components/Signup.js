@@ -19,7 +19,7 @@ function Signup() {
     setLoading(true);
 
     try {
-      const response = await apiClient.post('/api/users/signup', {
+      const response = await apiClient.post('/users/signup', {
         username,
         email,
         password,
