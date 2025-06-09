@@ -1,5 +1,5 @@
 import axios from 'axios';
-import API_BASE_URL from '../../config/apiConfig.js'; 
+import API_BASE_URL from '../../config/apiConfig.js';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -9,9 +9,10 @@ const apiClient = axios.create({
   withCredentials: true
 });
 
+// Add request interceptor
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -22,13 +23,15 @@ apiClient.interceptors.request.use(
   }
 );
 
+// Add response interceptor
 apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      console.error("Unauthorized access - 401. Redirecting to login or refreshing token...");
+    if (error.response?.status === 401) {
+      // Handle unauthorized access
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

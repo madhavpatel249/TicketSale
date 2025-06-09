@@ -51,18 +51,37 @@ connectDB().catch(err => {
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
-].filter(Boolean);
+  // Add your production domain
+  'https://ticketsale-xi.vercel.app',
+  // Add pattern for preview deployments
+  /^https:\/\/ticketsale-.*\.vercel\.app$/
+];
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      return callback(null, true);
+    }
+
+    // Check if origin matches any allowed origins
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return allowedOrigin === origin;
+    });
+
+    if (isAllowed) {
       callback(null, true);
     } else {
+      console.log('Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 
 app.use(express.json());
