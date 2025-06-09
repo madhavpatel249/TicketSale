@@ -7,6 +7,7 @@ require('dotenv').config();
 const eventRoutes = require('./routes/events'); 
 const authRoutes = require('./routes/auth');   
 const userRoutes = require('./routes/users');
+const uploadRoutes = require('./routes/upload');
 
 const app = express();
 
@@ -87,6 +88,7 @@ app.use(async (req, res, next) => {
 app.use('/api/events', eventRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/upload', uploadRoutes);
 
 
 app.get('/', (req, res) => {
