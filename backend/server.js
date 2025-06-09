@@ -54,7 +54,9 @@ const allowedOrigins = [
   // Add your production domain
   'https://ticketsale-xi.vercel.app',
   // Add pattern for preview deployments
-  /^https:\/\/ticketsale-.*\.vercel\.app$/
+  /^https:\/\/ticketsale-.*\.vercel\.app$/,
+  // Add specific preview deployment URL
+  'https://ticketsale-git-feature-image-upload-madhavpatel249s-projects.vercel.app'
 ];
 
 app.use(cors({
