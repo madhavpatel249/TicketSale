@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Calendar, MapPin, Image, Tag, Type } from 'lucide-react';
 import { AuthContext } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from '../config/apiConfig';
 
 function HostEvent() {
   const { user, token } = useContext(AuthContext);
@@ -48,7 +49,7 @@ function HostEvent() {
     formData.append('image', selectedFile);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/upload/image', formData, {
+      const response = await axios.post(`${API_BASE_URL}/upload/image`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -85,7 +86,7 @@ function HostEvent() {
         image: imageUrl
       };
 
-      const response = await axios.post('http://localhost:5000/api/events', eventData, {
+      const response = await axios.post(`${API_BASE_URL}/events`, eventData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
