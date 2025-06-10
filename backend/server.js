@@ -57,36 +57,27 @@ const allowedOrigins = [
   /^https:\/\/.*\.vercel\.app$/
 ];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      return callback(null, true);
-    }
+// CORS configuration
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Allow all Vercel deployments
+  if (origin && (origin.includes('vercel.app') || origin.includes('localhost'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Range, X-Content-Range');
+  }
 
-    // Check if origin matches any allowed origins
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      if (allowedOrigin instanceof RegExp) {
-        return allowedOrigin.test(origin);
-      }
-      return allowedOrigin === origin;
-    });
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range']
-}));
-
-// Add pre-flight OPTIONS handler
-app.options('*', cors());
+  next();
+});
 
 app.use(express.json());
 

@@ -1,13 +1,9 @@
-const getApiUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
-    // In production, use the backend Vercel URL
-    return 'https://ticket-sale-nc7e.vercel.app';
-  }
-  // In development, use localhost
-  return 'http://localhost:5000';
-};
+// API configuration
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://ticket-sale-nc7e.vercel.app/api'  // Production API URL
+  : 'http://localhost:5000/api';  // Development API URL
 
-// Log the API URL for debugging
-console.log('API URL:', getApiUrl());
+console.log('Current API Base URL:', API_BASE_URL);
+console.log('Current Environment:', process.env.NODE_ENV);
 
-export default getApiUrl();
+export { API_BASE_URL };
