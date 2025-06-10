@@ -48,11 +48,22 @@ connectDB().catch(err => {
 
 
 
-const allowedOrigins = ['https://ticketsale-git-feature-image-upload-madhavpatel249s-projects.vercel.app'];
+const allowedOrigins = [
+  'https://ticketsale-git-feature-image-upload-madhavpatel249s-projects.vercel.app',
+  'https://ticket-sale-nc7e.vercel.app',
+  'http://localhost:3000',
+  'http://localhost:5173'
+];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
+    // Allow all Vercel deployments and localhost
+    if (
+      allowedOrigins.includes(origin) ||
+      /vercel\.app$/.test(origin || '') ||
+      /localhost/.test(origin || '') ||
+      !origin
+    ) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -63,7 +74,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Serve manifest.json publicly
+// Serve manifest.json publicly (no auth)
 const path = require('path');
 app.use('/manifest.json', express.static(path.join(__dirname, '../frontend/public/manifest.json')));
 
