@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Calendar, MapPin, Image, Tag, Type } from 'lucide-react';
 import { AuthContext } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../config/apiConfig';
+import { API_BASE_URL } from '../config/apiConfig';
 
 function HostEvent() {
   const { user, token } = useContext(AuthContext);
