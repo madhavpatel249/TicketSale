@@ -48,36 +48,24 @@ connectDB().catch(err => {
 
 
 
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:5173',
-  // Add your production domain
-  'https://ticketsale-xi.vercel.app',
-  // Add pattern for all Vercel deployments
-  /^https:\/\/.*\.vercel\.app$/
-];
+const allowedOrigins = ['https://ticketsale-git-feature-image-upload-madhavpatel249s-projects.vercel.app'];
 
-// CORS configuration
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  
-  // Allow all Vercel deployments
-  if (origin && (origin.includes('vercel.app') || origin.includes('localhost'))) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Expose-Headers', 'Content-Range, X-Content-Range');
-  }
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
 
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
-    return;
-  }
+app.use(cors(corsOptions));
 
-  next();
-});
+// Serve manifest.json publicly
+const path = require('path');
+app.use('/manifest.json', express.static(path.join(__dirname, '../frontend/public/manifest.json')));
 
 app.use(express.json());
 
