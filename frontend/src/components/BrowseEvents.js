@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { api } from './services/apiService';
 import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import { Search, Filter, Calendar, MapPin, Tag, RefreshCw } from 'lucide-react';
@@ -12,7 +12,7 @@ function BrowseEvents() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/events');
+        const res = await api.getEvents();
         setEvents(res.data);
       } catch (err) {
         console.error('Error fetching events:', err);

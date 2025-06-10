@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from './services/apiService';
+import { api } from './services/apiService';
 import { AuthContext } from '../components/AuthContext';
 import { User, Lock, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,10 +15,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await apiClient.post('/auth/login', {
-        username,
-        password,
-      });
+      const response = await api.login({ username, password });
       login(response.data.user, response.data.token);
       navigate('/');
     } catch (err) {

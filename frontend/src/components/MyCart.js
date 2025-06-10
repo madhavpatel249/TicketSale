@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios from 'axios';
+import { api } from './services/apiService';
 import { AuthContext } from '../components/AuthContext';
 import { CalendarDays, MapPin, Ticket, Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
 
@@ -13,15 +13,13 @@ function MyCart() {
     const fetchCart = async () => {
       if (!user || !token) return;
       try {
-        const res = await axios.get(`http://localhost:5000/api/users/${user.id}/cart`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await api.getBookings();
         const cartItems = res.data.cart;
         setCart(cartItems);
 
         const eventIds = [...new Set(cartItems.map(item => item.eventId))];
         const responses = await Promise.all(
-          eventIds.map(id => axios.get(`http://localhost:5000/api/events/${id}`))
+          eventIds.map(id => api.getEvent(id))
         );
 
         const map = {};
@@ -42,11 +40,7 @@ function MyCart() {
 
   const updateCart = async (eventId, ticketType, action) => {
     try {
-      await axios.patch(
-        `http://localhost:5000/api/users/${user.id}/cart-item`,
-        { eventId, ticketType, action },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.patchBooking(eventId, ticketType, action);
       window.location.reload();
     } catch (err) {
       console.error('Update cart error:', err);
@@ -55,10 +49,7 @@ function MyCart() {
 
   const handleDelete = async (item) => {
     try {
-      await axios.delete(`http://localhost:5000/api/users/${user.id}/cart-item`, {
-        headers: { Authorization: `Bearer ${token}` },
-        data: { eventId: item.eventId, ticketType: item.type },
-      });
+      await api.deleteBooking(item.eventId, item.type);
       window.location.reload();
     } catch (err) {
       console.error('Delete error:', err);
@@ -93,15 +84,7 @@ function MyCart() {
   const handlePurchaseAll = async () => {
     try {
       for (const item of groupedCartItems) {
-        await axios.post(
-          `http://localhost:5000/api/users/${user.id}/purchase`,
-          {
-            eventId: item.eventId,
-            ticketType: item.type,
-            quantity: item.count,
-          },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await api.purchaseTicket(item.eventId, item.type, item.count);
       }
       window.location.reload();
     } catch (err) {

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/apiConfig';
 
 function ProtectedPage() {
   const [data, setData] = useState('');
@@ -16,7 +17,7 @@ function ProtectedPage() {
     }
 
     axios
-      .get('http://localhost:5000/api/protected', {
+      .get(`${API_BASE_URL}/protected`, {
         headers: { Authorization: token }
       })
       .then(response => setData(response.data.message))

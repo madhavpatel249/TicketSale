@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import { api } from './services/apiService';
 import Navbar from './Navbar';
 import { AuthContext } from '../components/AuthContext';
 import { CartContext } from '../components/CartContext';
@@ -24,10 +24,10 @@ function SingleEvent() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/events/${id}`);
+        const res = await api.getEvent(id);
         setEvent(res.data);
         // Fetch similar events
-        const similarRes = await axios.get(`http://localhost:5000/api/events?category=${res.data.category}`);
+        const similarRes = await api.getEvents();
         setSimilarEvents(similarRes.data.filter(e => e._id !== id));
       } catch (err) {
         console.error('Error fetching event:', err);
@@ -52,11 +52,8 @@ function SingleEvent() {
     addToCart({ ...event, type });
 
     try {
-      await axios.post(
-        `http://localhost:5000/api/users/${user.id}/cart`,
-        { eventId: event._id, ticketType: type },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const cartUrl = `/users/${user.id}/cart`;
+      await api.post(cartUrl, { eventId: event._id, ticketType: type }, { headers: { Authorization: `Bearer ${token}` } });
     } catch (error) {
       console.error('Error adding to cart:', error);
     }

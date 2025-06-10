@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from './services/apiService';
+import { api } from './services/apiService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Mail, Lock, UserPlus, LogIn } from 'lucide-react';
 
@@ -19,12 +19,7 @@ function Signup() {
     setLoading(true);
 
     try {
-      const response = await apiClient.post('/users/signup', {
-        username,
-        email,
-        password,
-        role,
-      });
+      const response = await api.signup({ username, email, password, role });
       console.log('Signup successful:', response.data);
       navigate('/login');
     } catch (error) {

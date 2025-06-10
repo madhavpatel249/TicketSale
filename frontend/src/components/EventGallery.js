@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import { api } from './services/apiService';
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -12,7 +12,7 @@ const EventGallery = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/events");
+        const response = await api.getEvents();
         setEvents(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import axios from 'axios';
+import { api } from './services/apiService';
 import Navbar from './Navbar';
 import { AuthContext } from '../components/AuthContext';
 import { CalendarDays, MapPin, Ticket, User, AlertCircle } from 'lucide-react';
@@ -17,15 +17,13 @@ function Profile() {
     const fetchTickets = async () => {
       if (!user || !token) return;
       try {
-        const res = await axios.get(`http://localhost:5000/api/users/${user.id}/tickets`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const res = await api.getBookings();
 
         const rawTickets = res.data.tickets;
         const eventIds = [...new Set(rawTickets.map(t => t.eventId))];
 
         const responses = await Promise.all(eventIds.map(id =>
-          axios.get(`http://localhost:5000/api/events/${id}`)
+          api.getEvent(id)
         ));
 
         const map = {};
