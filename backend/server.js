@@ -53,10 +53,8 @@ const allowedOrigins = [
   'http://localhost:5173',
   // Add your production domain
   'https://ticketsale-xi.vercel.app',
-  // Add pattern for preview deployments
-  /^https:\/\/ticketsale-.*\.vercel\.app$/,
-  // Add specific preview deployment URL
-  'https://ticketsale-git-feature-image-upload-madhavpatel249s-projects.vercel.app'
+  // Add pattern for all Vercel deployments
+  /^https:\/\/.*\.vercel\.app$/
 ];
 
 app.use(cors({
@@ -83,8 +81,12 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
 }));
+
+// Add pre-flight OPTIONS handler
+app.options('*', cors());
 
 app.use(express.json());
 
