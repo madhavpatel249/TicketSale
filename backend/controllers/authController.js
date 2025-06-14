@@ -99,29 +99,7 @@ exports.logout = (req, res) => {
 
 // Verify token controller
 exports.verifyToken = async (req, res) => {
-  const token = req.cookies.token;
-
-  if (!token) {
-    return res.status(401).json({ error: 'No token' });
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password');
-    
-    if (!user) {
-      return res.status(401).json({ error: 'User not found' });
-    }
-
-    res.status(200).json({
-      user: {
-        id: user._id,
-        username: user.username,
-        role: user.role
-      }
-    });
-  } catch (error) {
-    console.error('Token error:', error);
-    res.status(401).json({ error: 'Invalid token' });
-  }
+  // Always return unauthorized to ensure user is logged out
+  res.clearCookie('token');
+  return res.status(401).json({ error: 'Not authenticated' });
 }; 

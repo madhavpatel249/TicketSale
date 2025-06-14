@@ -11,10 +11,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Don't add any stored tokens
     return config;
   },
   (error) => {
@@ -28,7 +25,7 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      console.error("Unauthorized access - 401. Redirecting to login or refreshing token...");
+      console.error("Unauthorized access - 401");
     }
     return Promise.reject(error);
   }
