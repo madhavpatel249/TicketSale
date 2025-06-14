@@ -49,6 +49,7 @@ connectDB().catch(err => {
 
 
 const allowedOrigins = [
+  'https://ticketsale-mz2c537nf-madhavpatel249s-projects.vercel.app',
   'https://ticketsale-git-feature-image-upload-madhavpatel249s-projects.vercel.app',
   'https://ticket-sale-nc7e.vercel.app',
   'http://localhost:3000',
@@ -76,13 +77,28 @@ const corsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range']
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
 
+// Enable CORS for all routes
 app.use(cors(corsOptions));
 
-// Add a test endpoint to verify CORS
-app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
+// Handle preflight requests
+app.options('*', cors(corsOptions));
+
+// Add CORS headers to all responses
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && (allowedOrigins.includes(origin) || /vercel\.app$/.test(origin))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
+  next();
+});
 
 // Serve manifest.json publicly (no auth)
 const path = require('path');

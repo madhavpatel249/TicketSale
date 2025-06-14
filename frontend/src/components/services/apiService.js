@@ -28,6 +28,11 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    // Ensure CORS headers are set
+    config.headers['Access-Control-Allow-Origin'] = window.location.origin;
+    config.headers['Access-Control-Allow-Credentials'] = 'true';
+
     return config;
   },
   (error) => {
@@ -58,6 +63,11 @@ apiClient.interceptors.response.use(
       headers: error.config?.headers,
       origin: window.location.origin
     });
+
+    // Handle CORS errors specifically
+    if (error.message === 'Network Error' && !error.response) {
+      console.error('CORS Error: Request was blocked by CORS policy');
+    }
 
     if (error.response?.status === 401) {
       // Clear token and redirect to login
