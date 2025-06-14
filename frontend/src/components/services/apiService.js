@@ -7,6 +7,7 @@ const apiClient = axios.create({
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json'
   }
 });
 
@@ -18,7 +19,8 @@ apiClient.interceptors.request.use(
       url: `${config.baseURL}${config.url}`,
       method: config.method,
       headers: config.headers,
-      data: config.data
+      data: config.data,
+      origin: window.location.origin
     });
 
     // Get token from localStorage
@@ -41,7 +43,8 @@ apiClient.interceptors.response.use(
     console.log('API Response:', {
       url: response.config.url,
       status: response.status,
-      data: response.data
+      data: response.data,
+      headers: response.headers
     });
     return response;
   },
@@ -52,7 +55,8 @@ apiClient.interceptors.response.use(
       status: error.response?.status,
       data: error.response?.data,
       message: error.message,
-      headers: error.config?.headers
+      headers: error.config?.headers,
+      origin: window.location.origin
     });
 
     if (error.response?.status === 401) {

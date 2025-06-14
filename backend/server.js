@@ -57,6 +57,8 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: (origin, callback) => {
+    console.log('Incoming request from origin:', origin);
+    
     // Allow all Vercel deployments and localhost
     if (
       allowedOrigins.includes(origin) ||
@@ -64,15 +66,23 @@ const corsOptions = {
       /localhost/.test(origin || '') ||
       !origin
     ) {
+      console.log('Origin allowed:', origin);
       callback(null, true);
     } else {
+      console.log('Origin rejected:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range']
 };
 
 app.use(cors(corsOptions));
+
+// Add a test endpoint to verify CORS
+app.options('*', cors(corsOptions)); // Enable pre-flight for all routes
 
 // Serve manifest.json publicly (no auth)
 const path = require('path');
