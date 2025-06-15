@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../components/AuthContext';
 import { CalendarDays, MapPin, Ticket, Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
+import API_BASE_URL from '../config/apiConfig';
 
 function MyCart() {
   const { user, token } = useContext(AuthContext);
@@ -11,57 +12,94 @@ function MyCart() {
 
   useEffect(() => {
     const fetchCart = async () => {
-      if (!user || !token) return;
       try {
-        const res = await axios.get(`http://localhost:5000/api/users/${user.id}/cart`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await axios.get(`${API_BASE_URL}/api/users/${user.id}/cart`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
-        const cartItems = res.data.cart;
-        setCart(cartItems);
 
-        const eventIds = [...new Set(cartItems.map(item => item.eventId))];
-        const responses = await Promise.all(
-          eventIds.map(id => axios.get(`http://localhost:5000/api/events/${id}`))
+        const eventIds = res.data.map(item => item.eventId);
+        const eventResponses = await Promise.all(
+          eventIds.map(id => axios.get(`${API_BASE_URL}/api/events/${id}`))
         );
 
-        const map = {};
-        responses.forEach(res => {
-          map[res.data._id] = res.data;
+        const eventMap = {};
+        eventResponses.forEach(response => {
+          eventMap[response.data._id] = response.data;
         });
 
-        setEventMap(map);
+        setEventMap(eventMap);
+        setCart(res.data);
         setLoading(false);
-      } catch (err) {
-        console.error('Failed to fetch cart:', err);
+      } catch (error) {
+        console.error('Error fetching cart:', error);
         setLoading(false);
       }
     };
 
-    fetchCart();
+    if (user && token) {
+      fetchCart();
+    }
   }, [user, token]);
 
-  const updateCart = async (eventId, ticketType, action) => {
+  const handleQuantityChange = async (eventId, newQuantity) => {
     try {
-      await axios.patch(
-        `http://localhost:5000/api/users/${user.id}/cart-item`,
-        { eventId, ticketType, action },
-        { headers: { Authorization: `Bearer ${token}` } }
+      await axios.put(
+        `${API_BASE_URL}/api/users/${user.id}/cart-item`,
+        {
+          eventId,
+          quantity: newQuantity
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
-      window.location.reload();
-    } catch (err) {
-      console.error('Update cart error:', err);
+
+      setCart(prevCart =>
+        prevCart.map(item =>
+          item.eventId === eventId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+    } catch (error) {
+      console.error('Error updating quantity:', error);
     }
   };
 
-  const handleDelete = async (item) => {
+  const handleRemoveItem = async (eventId) => {
     try {
-      await axios.delete(`http://localhost:5000/api/users/${user.id}/cart-item`, {
-        headers: { Authorization: `Bearer ${token}` },
-        data: { eventId: item.eventId, ticketType: item.type },
+      await axios.delete(`${API_BASE_URL}/api/users/${user.id}/cart-item`, {
+        data: { eventId },
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
-      window.location.reload();
-    } catch (err) {
-      console.error('Delete error:', err);
+
+      setCart(prevCart => prevCart.filter(item => item.eventId !== eventId));
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      await axios.post(
+        `${API_BASE_URL}/api/users/${user.id}/purchase`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      setCart([]);
+      alert('Purchase successful!');
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      alert('Failed to complete purchase. Please try again.');
     }
   };
 
@@ -94,7 +132,7 @@ function MyCart() {
     try {
       for (const item of groupedCartItems) {
         await axios.post(
-          `http://localhost:5000/api/users/${user.id}/purchase`,
+          `${API_BASE_URL}/api/users/${user.id}/purchase`,
           {
             eventId: item.eventId,
             ticketType: item.type,
@@ -139,7 +177,7 @@ function MyCart() {
                     className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row gap-4 items-center"
                   >
                     <button
-                      onClick={() => handleDelete(item)}
+                      onClick={() => handleRemoveItem(item.eventId)}
                       className="absolute top-4 right-4 text-darkGray hover:text-warning transition-colors duration-200"
                     >
                       <Trash2 size={18} />
@@ -180,14 +218,14 @@ function MyCart() {
                       <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                         <button
                           className="p-2 hover:bg-primary/10 text-primary transition-colors"
-                          onClick={() => updateCart(item.eventId, item.type, 'decrease')}
+                          onClick={() => handleQuantityChange(item.eventId, item.count - 1)}
                         >
                           <Minus size={16} />
                         </button>
                         <span className="px-4 py-2 font-medium text-primary">{item.count}</span>
                         <button
                           className="p-2 hover:bg-primary/10 text-primary transition-colors"
-                          onClick={() => updateCart(item.eventId, item.type, 'increase')}
+                          onClick={() => handleQuantityChange(item.eventId, item.count + 1)}
                         >
                           <Plus size={16} />
                         </button>

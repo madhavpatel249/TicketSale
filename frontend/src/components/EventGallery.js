@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import API_BASE_URL from '../config/apiConfig';
 
 const EventGallery = () => {
   const [events, setEvents] = useState([]);
@@ -11,7 +12,7 @@ const EventGallery = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/events");
+        const response = await axios.get(`${API_BASE_URL}/api/events`);
         setEvents(response.data);
       } catch (error) {
         console.error("Error fetching events:", error);

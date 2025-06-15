@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Calendar, MapPin, Image, Tag, Type, Upload, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from './AuthContext';
+import API_BASE_URL from '../config/apiConfig';
 
 function HostEvent() {
   const { user } = useContext(AuthContext);
@@ -49,7 +50,7 @@ function HostEvent() {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await axios.post('http://localhost:5000/api/events/upload-image', formData, {
+      const response = await axios.post(`${API_BASE_URL}/api/events/upload-image`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -75,7 +76,7 @@ function HostEvent() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/events', formData);
+      const response = await axios.post(`${API_BASE_URL}/api/events`, formData);
       console.log('Event created successfully:', response.data);
       setFormData({
         title: '',

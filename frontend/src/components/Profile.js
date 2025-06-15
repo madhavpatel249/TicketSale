@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import { AuthContext } from '../components/AuthContext';
 import { CalendarDays, MapPin, Ticket, User, AlertCircle } from 'lucide-react';
 import Confetti from 'react-confetti';
+import API_BASE_URL from '../config/apiConfig';
 
 function Profile() {
   const { user, token } = useContext(AuthContext);
@@ -15,47 +16,35 @@ function Profile() {
 
   useEffect(() => {
     const fetchTickets = async () => {
-      if (!user || !token) return;
       try {
-        const res = await axios.get(`http://localhost:5000/api/users/${user.id}/tickets`, {
-          headers: { Authorization: `Bearer ${token}` }
+        const res = await axios.get(`${API_BASE_URL}/api/users/${user.id}/tickets`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
 
-        const rawTickets = res.data.tickets;
-        const eventIds = [...new Set(rawTickets.map(t => t.eventId))];
+        const ticketsWithEvents = await Promise.all(
+          res.data.map(async (ticket) => {
+            const eventRes = await axios.get(`${API_BASE_URL}/api/events/${ticket.eventId}`);
+            return {
+              ...ticket,
+              event: eventRes.data
+            };
+          })
+        );
 
-        const responses = await Promise.all(eventIds.map(id =>
-          axios.get(`http://localhost:5000/api/events/${id}`)
-        ));
-
-        const map = {};
-        responses.forEach(res => {
-          map[res.data._id] = res.data;
-        });
-
-        rawTickets.sort((a, b) => {
-          const dateA = new Date(map[a.eventId]?.date || 0);
-          const dateB = new Date(map[b.eventId]?.date || 0);
-          return dateA - dateB;
-        });
-
-        if (tickets.length > 0 && rawTickets.length > tickets.length) {
-          setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 3000);
-        }
-
-        setEventsMap(map);
-        setTickets(rawTickets);
-        setError('');
-      } catch (err) {
-        console.error('Failed to fetch tickets:', err);
-        setError('Failed to load your tickets.');
-      } finally {
+        setTickets(ticketsWithEvents);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching tickets:', error);
+        setError('Failed to load tickets');
         setLoading(false);
       }
     };
 
-    fetchTickets();
+    if (user && token) {
+      fetchTickets();
+    }
   }, [user, token]);
 
   const groupTicketsByMonth = () => {

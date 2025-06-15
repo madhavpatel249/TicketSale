@@ -6,6 +6,7 @@ import { AuthContext } from '../components/AuthContext';
 import { CartContext } from '../components/CartContext';
 import { ChevronLeft, ChevronRight, Calendar, MapPin, Clock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import API_BASE_URL from '../config/apiConfig';
 
 function SingleEvent() {
   const { id } = useParams();
@@ -24,15 +25,16 @@ function SingleEvent() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/events/${id}`);
+        const res = await axios.get(`${API_BASE_URL}/api/events/${id}`);
         setEvent(res.data);
         // Fetch similar events
-        const similarRes = await axios.get(`http://localhost:5000/api/events?category=${res.data.category}`);
+        const similarRes = await axios.get(`${API_BASE_URL}/api/events?category=${res.data.category}`);
         setSimilarEvents(similarRes.data.filter(e => e._id !== id));
-      } catch (err) {
-        console.error('Error fetching event:', err);
+      } catch (error) {
+        console.error('Error fetching event:', error);
       }
     };
+
     fetchEvent();
   }, [id]);
 
@@ -42,26 +44,30 @@ function SingleEvent() {
     }
   }, [event]);
 
-  const handleAddToCart = async (type) => {
+  const handleAddToCart = async () => {
     if (!user) {
-      alert('Please log in to add tickets to your cart.');
+      navigate('/login');
       return;
     }
 
-    setClickedButton(type);
-    addToCart({ ...event, type });
-
     try {
       await axios.post(
-        `http://localhost:5000/api/users/${user.id}/cart`,
-        { eventId: event._id, ticketType: type },
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${API_BASE_URL}/api/users/${user.id}/cart`,
+        {
+          eventId: id,
+          quantity: 1
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
+      addToCart(event);
+      setClickedButton('cart');
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
-
-    setTimeout(() => setClickedButton(null), 500);
   };
 
   const scrollGallery = (direction) => {
