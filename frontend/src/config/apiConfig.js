@@ -1,6 +1,6 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || 
                      (process.env.NODE_ENV === 'production' 
-                     ? 'https://ticket-sale-nc7e.vercel.app/'  // Replace with your actual backend Vercel URL
+                     ? 'https://ticket-sale-nc7e.vercel.app'  // Production backend URL (no trailing slash)
                      : 'http://localhost:5000');
 
 if (!API_BASE_URL || API_BASE_URL === 'http://localhost:5000' && process.env.NODE_ENV === 'production') {
