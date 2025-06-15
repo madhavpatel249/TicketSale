@@ -8,6 +8,5 @@ export { default as BrowseEvents } from './BrowseEvents';
 export { default as SingleEvent } from './SingleEvent';
 export { default as MyCart } from './MyCart';
 export { default as Profile } from './Profile';
-export { default as ProtectedPage } from './ProtectedPage';
 export { AuthContext, AuthProvider } from './AuthContext';
 export { CartContext, CartProvider, useCart } from './CartContext'; 

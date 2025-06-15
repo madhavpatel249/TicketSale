@@ -1,15 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
-import { Calendar, MapPin, Image, Tag, Type } from 'lucide-react';
+import { Calendar, MapPin, Image, Tag, Type, Upload, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { AuthContext } from './AuthContext';
 
 function HostEvent() {
+  const { user } = useContext(AuthContext);
+  const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     date: '',
     location: '',
     category: '',
-    image: '',
+    image: ''
   });
+
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({
@@ -18,8 +26,54 @@ function HostEvent() {
     });
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size should be less than 5MB');
+      return;
+    }
+
+    try {
+      setUploading(true);
+      setError('');
+
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await axios.post('http://localhost:5000/api/events/upload-image', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setFormData(prev => ({
+        ...prev,
+        image: response.data.imageUrl
+      }));
+      setImagePreview(response.data.imageUrl);
+    } catch (error) {
+      setError(error.response?.data?.error || 'Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user || user.role !== 'host') {
+      setShowModal(true);
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/api/events', formData);
       console.log('Event created successfully:', response.data);
@@ -28,117 +82,165 @@ function HostEvent() {
         date: '',
         location: '',
         category: '',
-        image: '',
+        image: ''
       });
+      setImagePreview(null);
       alert('Event hosted successfully!');
     } catch (error) {
       console.error('Error creating event:', error);
-      alert('Failed to host event');
+      setError(error.response?.data?.error || 'Failed to host event');
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-lightGray pt-24 pb-12">
-      <div className="bg-white p-8 rounded-xl shadow-sm w-full max-w-md animate-fade-in">
-        <h2 className="text-2xl font-bold text-center text-primary mb-8">
+    <div className="flex items-center justify-center min-h-screen bg-lightGray pt-12 pb-8">
+      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-xl">
+        <h2 className="text-2xl font-bold text-center text-primary mb-6">
           Host an Event
         </h2>
 
+        {error && (
+          <div className="mb-4 p-2 bg-red-50 text-red-600 rounded-lg flex items-center gap-2">
+            <span className="text-sm">{error}</span>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label htmlFor="title" className="flex items-center gap-2 text-sm font-medium text-primary">
-              <Type size={16} />
-              Event Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
-              placeholder="Enter event title"
-            />
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label htmlFor="title" className="flex items-center gap-1 text-sm font-medium text-primary">
+                <Type size={16} />
+                Event Title
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                placeholder="Enter event title"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="date" className="flex items-center gap-1 text-sm font-medium text-primary">
+                <Calendar size={16} />
+                Event Date
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label htmlFor="location" className="flex items-center gap-1 text-sm font-medium text-primary">
+                <MapPin size={16} />
+                Location
+              </label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                placeholder="Enter event location"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="category" className="flex items-center gap-1 text-sm font-medium text-primary">
+                <Tag size={16} />
+                Category
+              </label>
+              <select
+                id="category"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+              >
+                <option value="">Select a category</option>
+                <option value="concert">Concert</option>
+                <option value="sports">Sports</option>
+                <option value="theater">Theater</option>
+              </select>
+            </div>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="date" className="flex items-center gap-2 text-sm font-medium text-primary">
-              <Calendar size={16} />
-              Event Date
-            </label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="location" className="flex items-center gap-2 text-sm font-medium text-primary">
-              <MapPin size={16} />
-              Location
-            </label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
-              placeholder="Enter event location"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="category" className="flex items-center gap-2 text-sm font-medium text-primary">
-              <Tag size={16} />
-              Category
-            </label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
-            >
-              <option value="">Select a category</option>
-              <option value="concert">Concert</option>
-              <option value="sports">Sports</option>
-              <option value="theater">Theater</option>
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label htmlFor="image" className="flex items-center gap-2 text-sm font-medium text-primary">
+            <label className="flex items-center gap-1 text-sm font-medium text-primary">
               <Image size={16} />
-              Image URL
+              Event Image
             </label>
-            <input
-              type="text"
-              id="image"
-              name="image"
-              value={formData.image}
-              onChange={handleChange}
-              placeholder="Enter event image URL"
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
-            />
+            <div className="relative">
+              <input
+                type="file"
+                id="image"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              <label
+                htmlFor="image"
+                className="flex items-center justify-center gap-2 w-full px-4 py-3 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-primary/50 transition-all duration-200"
+              >
+                <Upload size={18} className="text-gray-400" />
+                <span className="text-gray-500">
+                  {uploading ? 'Uploading...' : 'Click to upload image'}
+                </span>
+              </label>
+            </div>
+            {imagePreview && (
+              <div className="mt-3">
+                <img
+                  src={imagePreview}
+                  alt="Event preview"
+                  className="w-full h-40 object-cover rounded-lg"
+                />
+              </div>
+            )}
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
-            className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+            disabled={uploading}
+            className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Host Event
-          </button>
+            {uploading ? 'Uploading...' : 'Host Event'}
+          </motion.button>
         </form>
       </div>
+
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-6 right-6 bg-white p-4 rounded-lg shadow-lg border border-gray-100 flex items-center gap-3"
+          >
+            <AlertCircle className="text-warning" size={20} />
+            <p className="text-sm font-medium text-gray-700">
+              You need to be logged in as a host
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

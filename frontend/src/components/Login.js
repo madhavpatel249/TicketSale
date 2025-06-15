@@ -32,53 +32,33 @@ function Login() {
   };
 
   const containerVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 1 },
     visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        staggerChildren: 0.1
-      }
+      opacity: 1
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 1 },
     visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100
-      }
+      opacity: 1
     }
   };
 
   return (
-    <motion.div 
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="flex items-center justify-center min-h-screen bg-lightGray pt-24 pb-12"
-    >
-      <motion.div 
-        variants={itemVariants}
-        className="bg-white p-8 rounded-xl shadow-sm w-full max-w-md"
-      >
-        <motion.h2 
-          variants={itemVariants}
-          className="text-2xl font-bold text-center text-primary mb-8"
-        >
+    <div className="flex items-center justify-center min-h-screen bg-lightGray pt-24 pb-12">
+      <div className="bg-white p-8 rounded-xl shadow-sm w-full max-w-md">
+        <h2 className="text-2xl font-bold text-center text-primary mb-8">
           Welcome Back
-        </motion.h2>
+        </h2>
         
-        <AnimatePresence>
+        <AnimatePresence mode="wait">
           {error && (
             <motion.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
               className="flex items-center gap-2 text-warning bg-warning/10 p-3 rounded-lg mb-6"
             >
               <AlertCircle size={18} />
@@ -87,18 +67,13 @@ function Login() {
           )}
         </AnimatePresence>
 
-        <motion.form 
-          variants={itemVariants}
-          onSubmit={handleLogin} 
-          className="space-y-6"
-        >
-          <motion.div variants={itemVariants} className="space-y-2">
+        <form onSubmit={handleLogin} className="space-y-6">
+          <div className="space-y-2">
             <label htmlFor="username" className="flex items-center gap-2 text-sm font-medium text-primary">
               <User size={16} />
               Username
             </label>
-            <motion.input
-              whileFocus={{ scale: 1.01 }}
+            <input
               type="text"
               id="username"
               value={username}
@@ -107,15 +82,14 @@ function Login() {
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
               placeholder="Enter your username"
             />
-          </motion.div>
+          </div>
 
-          <motion.div variants={itemVariants} className="space-y-2">
+          <div className="space-y-2">
             <label htmlFor="password" className="flex items-center gap-2 text-sm font-medium text-primary">
               <Lock size={16} />
               Password
             </label>
-            <motion.input
-              whileFocus={{ scale: 1.01 }}
+            <input
               type="password"
               id="password"
               value={password}
@@ -124,10 +98,9 @@ function Login() {
               className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
               placeholder="Enter your password"
             />
-          </motion.div>
+          </div>
 
           <motion.button
-            variants={itemVariants}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
@@ -135,12 +108,9 @@ function Login() {
           >
             Log In
           </motion.button>
-        </motion.form>
+        </form>
 
-        <motion.p 
-          variants={itemVariants}
-          className="text-center text-sm text-darkGray mt-6"
-        >
+        <p className="text-center text-sm text-darkGray mt-6">
           Don't have an account?{' '}
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -150,9 +120,9 @@ function Login() {
           >
             Sign Up
           </motion.button>
-        </motion.p>
-      </motion.div>
-    </motion.div>
+        </p>
+      </div>
+    </div>
   );
 }
 
