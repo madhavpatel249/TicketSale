@@ -97,7 +97,7 @@ const SingleEvent = () => {
     }
   };
 
-  if (!event) {
+  if (loading) {
     return (
       <motion.div 
         initial={{ opacity: 0 }}
@@ -108,6 +108,32 @@ const SingleEvent = () => {
       </motion.div>
     );
   }
+
+  if (error) {
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="pt-24 text-center text-red-500 text-lg"
+      >
+        {error}
+      </motion.div>
+    );
+  }
+
+  if (!event) {
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="pt-24 text-center text-primary text-lg"
+      >
+        No event found.
+      </motion.div>
+    );
+  }
+
+  console.log("Event object:", event);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -163,7 +189,7 @@ const SingleEvent = () => {
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.5 }}
                     src={event.image}
-                    alt={event.title}
+                    alt={event.title || 'Event image'}
                     className="w-full h-full object-cover"
                     onError={() => setImageError(true)}
                   />
@@ -237,7 +263,7 @@ const SingleEvent = () => {
               variants={itemVariants}
               className="text-4xl font-bold text-primary mb-6"
             >
-              {event.title}
+              {event.title || "No title"}
             </motion.h1>
             <motion.div 
               variants={itemVariants}
@@ -248,21 +274,21 @@ const SingleEvent = () => {
                 className="flex items-center gap-2 text-darkGray"
               >
                 <Calendar size={18} />
-                <p>{new Date(event.date).toLocaleDateString()}</p>
+                <p>{event.date ? new Date(event.date).toLocaleDateString() : "No date"}</p>
               </motion.div>
               <motion.div 
                 variants={itemVariants}
                 className="flex items-center gap-2 text-darkGray"
               >
                 <Clock size={18} />
-                <p>{new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                <p>{event.date ? new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "No time"}</p>
               </motion.div>
               <motion.div 
                 variants={itemVariants}
                 className="flex items-center gap-2 text-darkGray"
               >
                 <MapPin size={18} />
-                <p>{event.location}</p>
+                <p>{event.location || "No location"}</p>
               </motion.div>
             </motion.div>
             <hr className="my-6 border-gray-100" />
@@ -270,7 +296,7 @@ const SingleEvent = () => {
               variants={itemVariants}
               className="text-darkGray leading-relaxed"
             >
-              {event.description}
+              {event.description || "No description available."}
             </motion.p>
           </motion.div>
         </motion.div>
