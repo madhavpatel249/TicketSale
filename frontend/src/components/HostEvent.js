@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
 import { Calendar, MapPin, Image, Tag, Type, Upload, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from './AuthContext';
 import API_BASE_URL from '../config/apiConfig';
+import apiClient from './services/apiService';
 
 function HostEvent() {
   const { user } = useContext(AuthContext);
@@ -19,6 +19,9 @@ function HostEvent() {
   const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -31,40 +34,22 @@ function HostEvent() {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please upload an image file');
-      return;
-    }
-
-    // Validate file size (5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError('Image size should be less than 5MB');
-      return;
-    }
+    const formData = new FormData();
+    formData.append('image', file);
 
     try {
-      setUploading(true);
-      setError('');
-
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await axios.post(`${API_BASE_URL}/api/events/upload-image`, formData, {
+      const response = await apiClient.post('/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-      setFormData(prev => ({
-        ...prev,
-        image: response.data.imageUrl
-      }));
-      setImagePreview(response.data.imageUrl);
+      setFormData(prev => ({ ...prev, image: response.data.url }));
+      setImagePreview(URL.createObjectURL(file));
     } catch (error) {
-      setError(error.response?.data?.error || 'Failed to upload image');
-    } finally {
-      setUploading(false);
+      console.error('Error uploading image:', error);
+      setShowError(true);
+      setErrorMessage('Failed to upload image. Please try again.');
+      setTimeout(() => setShowError(false), 3000);
     }
   };
 
@@ -75,21 +60,31 @@ function HostEvent() {
       return;
     }
 
+    setUploading(true);
+    setShowError(false);
+    setErrorMessage('');
+
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/events`, formData);
-      console.log('Event created successfully:', response.data);
-      setFormData({
-        title: '',
-        date: '',
-        location: '',
-        category: '',
-        image: ''
-      });
-      setImagePreview(null);
-      alert('Event hosted successfully!');
+      const response = await apiClient.post('/api/events', formData);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        setFormData({
+          title: '',
+          date: '',
+          location: '',
+          category: '',
+          image: ''
+        });
+        setImagePreview(null);
+      }, 2000);
     } catch (error) {
       console.error('Error creating event:', error);
-      setError(error.response?.data?.error || 'Failed to host event');
+      setShowError(true);
+      setErrorMessage(error.response?.data?.message || 'Failed to create event. Please try again.');
+      setTimeout(() => setShowError(false), 3000);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -100,9 +95,9 @@ function HostEvent() {
           Host an Event
         </h2>
 
-        {error && (
+        {showError && (
           <div className="mb-4 p-2 bg-red-50 text-red-600 rounded-lg flex items-center gap-2">
-            <span className="text-sm">{error}</span>
+            <span className="text-sm">{errorMessage}</span>
           </div>
         )}
 
