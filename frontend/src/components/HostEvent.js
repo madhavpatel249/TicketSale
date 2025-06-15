@@ -11,15 +11,10 @@ function HostEvent() {
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
-    description: '',
     date: '',
-    time: '',
     location: '',
     category: '',
-    image: '',
-    price: '',
-    capacity: '',
-    type: 'general'
+    image: ''
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -86,9 +81,9 @@ function HostEvent() {
       return;
     }
 
-    // Validate required fields
-    const requiredFields = ['title', 'description', 'date', 'time', 'location', 'category', 'price', 'capacity'];
-    const missingFields = requiredFields.filter(field => !formData[field]);
+    // Validate required fields 
+    const requiredFields = ['title', 'date', 'location', 'category'];
+    const missingFields = requiredFields.filter(field => !formData[field]);     
     
     if (missingFields.length > 0) {
       setShowError(true);
@@ -109,14 +104,10 @@ function HostEvent() {
     try {
       const eventData = {
         title: formData.title,
-        description: formData.description,
-        datetime: `${formData.date}T${formData.time}:00.000Z`,
+        date: formData.date,
         location: formData.location,
         category: formData.category,
         image: formData.image,
-        price: parseFloat(formData.price),
-        capacity: parseInt(formData.capacity),
-        type: formData.type,
         userId: user.id
       };
 
