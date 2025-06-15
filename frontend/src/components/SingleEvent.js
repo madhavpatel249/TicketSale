@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from './Navbar';
 import { AuthContext } from '../components/AuthContext';
@@ -8,14 +8,22 @@ import { ChevronLeft, ChevronRight, Calendar, MapPin, Clock } from 'lucide-react
 import { motion, AnimatePresence } from 'framer-motion';
 import API_BASE_URL from '../config/apiConfig';
 
-function SingleEvent() {
+const SingleEvent = () => {
   const { id } = useParams();
-  const [event, setEvent] = useState(null);
-  const [similarEvents, setSimilarEvents] = useState([]);
-  const [clickedButton, setClickedButton] = useState(null);
-  const [imageError, setImageError] = useState(false);
+  const navigate = useNavigate();
   const { user, token } = useContext(AuthContext);
   const { addToCart } = useContext(CartContext);
+  const [event, setEvent] = useState(null);
+  const [similarEvents, setSimilarEvents] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [clickedButton, setClickedButton] = useState(null);
+  const [imageError, setImageError] = useState(false);
+  const galleryRef = useRef(null);
 
   const ticketRef = useRef();
   const scrollRef = useRef();
@@ -44,18 +52,19 @@ function SingleEvent() {
     }
   }, [event]);
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (type) => {
     if (!user) {
       navigate('/login');
       return;
     }
 
     try {
-      await axios.post(
+      const response = await axios.post(
         `${API_BASE_URL}/api/users/${user.id}/cart`,
         {
           eventId: id,
-          quantity: 1
+          quantity: 1,
+          type: type
         },
         {
           headers: {
@@ -64,9 +73,14 @@ function SingleEvent() {
         }
       );
       addToCart(event);
-      setClickedButton('cart');
+      setClickedButton(type);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
       console.error('Error adding to cart:', error);
+      setShowError(true);
+      setErrorMessage('An error occurred while adding to cart. Please try again later.');
+      setTimeout(() => setShowError(false), 3000);
     }
   };
 
@@ -139,19 +153,24 @@ function SingleEvent() {
               className="w-full lg:w-2/3 rounded-xl overflow-hidden border border-gray-100"
               style={{ height: imageHeight ? `${imageHeight}px` : 'auto' }}
             >
-              {!imageError && event.image ? (
-                <motion.img
-                  initial={{ scale: 1.1 }}
-                  animate={{ scale: 1 }}
-                  transition={{ duration: 0.5 }}
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-full object-cover"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200"></div>
-              )}
+              <motion.div
+                className="relative"
+                style={{ height: imageHeight ? `${imageHeight}px` : 'auto' }}
+              >
+                {!imageError && event.image ? (
+                  <motion.img
+                    initial={{ scale: 1.1 }}
+                    animate={{ scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                    src={event.image}
+                    alt={event.title}
+                    className="w-full h-full object-cover"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-200"></div>
+                )}
+              </motion.div>
             </motion.div>
 
             {/* Buy Tickets */}
