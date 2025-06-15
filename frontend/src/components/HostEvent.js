@@ -4,16 +4,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from './AuthContext';
 import API_BASE_URL from '../config/apiConfig';
 import apiClient from './services/apiService';
+import { useNavigate } from 'react-router-dom';
 
 function HostEvent() {
-  const { user } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
+    description: '',
     date: '',
+    time: '',
     location: '',
     category: '',
-    image: ''
+    image: '',
+    price: '',
+    capacity: '',
+    type: 'general'
   });
 
   const [imagePreview, setImagePreview] = useState(null);
@@ -22,12 +28,14 @@ function HostEvent() {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   const handleImageUpload = async (e) => {
@@ -53,10 +61,28 @@ function HostEvent() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    if (!user || user.role !== 'host') {
-      setShowModal(true);
+    
+    if (!user || !token) {
+      setShowError(true);
+      setErrorMessage('Please log in to host an event');
+      return;
+    }
+
+    // Validate required fields
+    const requiredFields = ['title', 'description', 'date', 'time', 'location', 'category', 'price', 'capacity'];
+    const missingFields = requiredFields.filter(field => !formData[field]);
+    
+    if (missingFields.length > 0) {
+      setShowError(true);
+      setErrorMessage(`Please fill in all required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+    
+    if (!formData.image) {
+      setShowError(true);
+      setErrorMessage('Please upload an event image');
       return;
     }
 
@@ -65,24 +91,29 @@ function HostEvent() {
     setErrorMessage('');
 
     try {
-      const response = await apiClient.post('/api/events', formData);
+      const eventData = {
+        title: formData.title,
+        description: formData.description,
+        datetime: `${formData.date}T${formData.time}:00.000Z`,
+        location: formData.location,
+        category: formData.category,
+        image: formData.image,
+        price: parseFloat(formData.price),
+        capacity: parseInt(formData.capacity),
+        type: formData.type,
+        userId: user.id
+      };
+
+      const response = await apiClient.post('/api/events', eventData);
       setShowSuccess(true);
       setTimeout(() => {
         setShowSuccess(false);
-        setFormData({
-          title: '',
-          date: '',
-          location: '',
-          category: '',
-          image: ''
-        });
-        setImagePreview(null);
+        navigate('/');
       }, 2000);
     } catch (error) {
       console.error('Error creating event:', error);
       setShowError(true);
-      setErrorMessage(error.response?.data?.message || 'Failed to create event. Please try again.');
-      setTimeout(() => setShowError(false), 3000);
+      setErrorMessage(error.response?.data?.error || 'Failed to create event. Please try again.');
     } finally {
       setUploading(false);
     }
@@ -101,7 +132,7 @@ function HostEvent() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
               <label htmlFor="title" className="flex items-center gap-1 text-sm font-medium text-primary">
