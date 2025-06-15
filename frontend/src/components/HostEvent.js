@@ -42,22 +42,38 @@ function HostEvent() {
     const file = e.target.files[0];
     if (!file) return;
 
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setShowError(true);
+      setErrorMessage('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setShowError(true);
+      setErrorMessage('Image size should be less than 5MB');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('image', file);
 
     try {
-      const response = await apiClient.post('/api/upload', formData, {
+      setUploading(true);
+      const response = await apiClient.post('/api/events/upload-image', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setFormData(prev => ({ ...prev, image: response.data.url }));
+      setFormData(prev => ({ ...prev, image: response.data.imageUrl }));
       setImagePreview(URL.createObjectURL(file));
     } catch (error) {
       console.error('Error uploading image:', error);
       setShowError(true);
       setErrorMessage('Failed to upload image. Please try again.');
-      setTimeout(() => setShowError(false), 3000);
+    } finally {
+      setUploading(false);
     }
   };
 
