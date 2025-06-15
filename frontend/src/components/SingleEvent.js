@@ -32,14 +32,28 @@ const SingleEvent = () => {
 
   useEffect(() => {
     const fetchEvent = async () => {
+      setLoading(true);
+      setError(null);
+      setEvent(null);
+
       try {
         const res = await axios.get(`${API_BASE_URL}/api/events/${id}`);
-        setEvent(res.data);
-        // Fetch similar events
-        const similarRes = await axios.get(`${API_BASE_URL}/api/events?category=${res.data.category}`);
-        setSimilarEvents(similarRes.data.filter(e => e._id !== id));
-      } catch (error) {
-        console.error('Error fetching event:', error);
+
+        // Expect a single object, not an array
+        if (res.data && res.data._id) {
+          setEvent(res.data);
+
+          // Fetch similar events using the event object
+          const similarRes = await axios.get(`${API_BASE_URL}/api/events?category=${res.data.category}`);
+          setSimilarEvents(similarRes.data.filter(e => e._id !== id));
+        } else {
+          setError('Event not found.');
+        }
+      } catch (err) {
+        console.error('Error fetching event:', err);
+        setError('Could not load event details. Please try again later.');
+      } finally {
+        setLoading(false);
       }
     };
 
