@@ -145,7 +145,7 @@ const SingleEvent = () => {
       variants={containerVariants}
       className="min-h-screen bg-lightGray pt-24"
     >
-      <Navbar />
+      <Navbar scrolled={true} />
       <div className="max-w-5xl mx-auto px-4 py-10">
         <motion.div 
           variants={itemVariants}
