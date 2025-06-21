@@ -172,91 +172,95 @@ const SingleEvent = () => {
             <motion.div 
               variants={itemVariants}
               ref={ticketRef} 
-              className="w-full lg:w-1/3 flex flex-col justify-between space-y-6 p-6"
+              className="w-full lg:w-1/3 flex flex-col space-y-6 p-6"
             >
-              <motion.h2 
-                variants={itemVariants}
-                className="text-2xl font-semibold text-primary"
-              >
-                Buy Tickets
-              </motion.h2>
-              <motion.div 
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                className="border border-gray-100 rounded-xl p-5 bg-white shadow-sm transition-all duration-200 hover:shadow-md"
-              >
-                <p className="font-medium text-lg text-primary">General Admission</p>
-                <p className="text-sm text-darkGray mb-3">Access to main event area</p>
-                <motion.button
+              <motion.div variants={itemVariants}>
+                <motion.h1 
+                  variants={itemVariants}
+                  className="text-3xl font-bold text-primary mb-4"
+                >
+                  {event.title || "No title"}
+                </motion.h1>
+                <motion.div 
+                  variants={itemVariants}
+                  className="flex flex-col gap-3 mb-6"
+                >
+                  <motion.div 
+                    variants={itemVariants}
+                    className="flex items-center gap-2 text-darkGray"
+                  >
+                    <Calendar size={18} />
+                    <p>{event.date ? new Date(event.date).toLocaleDateString() : "No date"}</p>
+                  </motion.div>
+                  <motion.div 
+                    variants={itemVariants}
+                    className="flex items-center gap-2 text-darkGray"
+                  >
+                    <Clock size={18} />
+                    <p>{event.date ? new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "No time"}</p>
+                  </motion.div>
+                  <motion.div 
+                    variants={itemVariants}
+                    className="flex items-center gap-2 text-darkGray"
+                  >
+                    <MapPin size={18} />
+                    <p>{event.location || "No location"}</p>
+                  </motion.div>
+                </motion.div>
+                <hr className="my-6 border-gray-100" />
+                <motion.p 
+                  variants={itemVariants}
+                  className="text-darkGray leading-relaxed mb-6"
+                >
+                  {event.description || "No description available."}
+                </motion.p>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <motion.h2 
+                  variants={itemVariants}
+                  className="text-2xl font-semibold text-primary mb-4"
+                >
+                  Buy Tickets
+                </motion.h2>
+                <motion.div 
+                  variants={itemVariants}
                   whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleAddToCart('general')}
-                  className={`w-full px-4 py-2.5 rounded-lg font-medium text-sm flex justify-center items-center transition-all duration-200
-                    ${clickedButton === 'general'
-                      ? 'bg-secondary text-white'
-                      : 'bg-primary text-white hover:bg-primary/90'}`}
+                  className="border border-gray-100 rounded-xl p-5 bg-white shadow-sm transition-all duration-200 hover:shadow-md mb-4"
                 >
-                  {clickedButton === 'general' ? '✔ Added' : 'Add to Cart'}
-                </motion.button>
-              </motion.div>
-              <motion.div 
-                variants={itemVariants}
-                whileHover={{ scale: 1.02 }}
-                className="border border-gray-100 rounded-xl p-5 bg-white shadow-sm transition-all duration-200 hover:shadow-md"
-              >
-                <p className="font-medium text-lg text-primary">VIP Ticket</p>
-                <p className="text-sm text-darkGray mb-3">Front row & backstage access</p>
-                <motion.button
+                  <p className="font-medium text-lg text-primary">General Admission</p>
+                  <p className="text-sm text-darkGray mb-3">Access to main event area</p>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleAddToCart('general')}
+                    className={`w-full px-4 py-2.5 rounded-lg font-medium text-sm flex justify-center items-center transition-all duration-200
+                      ${clickedButton === 'general'
+                        ? 'bg-secondary text-white'
+                        : 'bg-primary text-white hover:bg-primary/90'}`}
+                  >
+                    {clickedButton === 'general' ? '✔ Added' : 'Add to Cart'}
+                  </motion.button>
+                </motion.div>
+                <motion.div 
+                  variants={itemVariants}
                   whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleAddToCart('vip')}
-                  className={`w-full px-4 py-2.5 rounded-lg font-medium text-sm flex justify-center items-center transition-all duration-200
-                    ${clickedButton === 'vip'
-                      ? 'bg-secondary text-white'
-                      : 'bg-primary text-white hover:bg-primary/90'}`}
+                  className="border border-gray-100 rounded-xl p-5 bg-white shadow-sm transition-all duration-200 hover:shadow-md"
                 >
-                  {clickedButton === 'vip' ? '✔ Added' : 'Add to Cart'}
-                </motion.button>
-              </motion.div>
-              <motion.h1 
-                variants={itemVariants}
-                className="text-4xl font-bold text-primary mb-6"
-              >
-                {event.title || "No title"}
-              </motion.h1>
-              <motion.div 
-                variants={itemVariants}
-                className="flex flex-col gap-3 mb-6"
-              >
-                <motion.div 
-                  variants={itemVariants}
-                  className="flex items-center gap-2 text-darkGray"
-                >
-                  <Calendar size={18} />
-                  <p>{event.date ? new Date(event.date).toLocaleDateString() : "No date"}</p>
-                </motion.div>
-                <motion.div 
-                  variants={itemVariants}
-                  className="flex items-center gap-2 text-darkGray"
-                >
-                  <Clock size={18} />
-                  <p>{event.date ? new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "No time"}</p>
-                </motion.div>
-                <motion.div 
-                  variants={itemVariants}
-                  className="flex items-center gap-2 text-darkGray"
-                >
-                  <MapPin size={18} />
-                  <p>{event.location || "No location"}</p>
+                  <p className="font-medium text-lg text-primary">VIP Ticket</p>
+                  <p className="text-sm text-darkGray mb-3">Front row & backstage access</p>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleAddToCart('vip')}
+                    className={`w-full px-4 py-2.5 rounded-lg font-medium text-sm flex justify-center items-center transition-all duration-200
+                      ${clickedButton === 'vip'
+                        ? 'bg-secondary text-white'
+                        : 'bg-primary text-white hover:bg-primary/90'}`}
+                  >
+                    {clickedButton === 'vip' ? '✔ Added' : 'Add to Cart'}
+                  </motion.button>
                 </motion.div>
               </motion.div>
-              <hr className="my-6 border-gray-100" />
-              <motion.p 
-                variants={itemVariants}
-                className="text-darkGray leading-relaxed"
-              >
-                {event.description || "No description available."}
-              </motion.p>
             </motion.div>
           </div>
         </motion.div>
