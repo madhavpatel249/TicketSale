@@ -3,6 +3,7 @@ const router = express.Router();
 const { upload, processImage } = require('../middleware/upload');
 const Event = require('../models/Event');
 const eventController = require('../controllers/eventController');
+const mongoose = require('mongoose');
 
 // Middleware for event validation
 const validateEvent = async (req, res, next) => {
@@ -101,6 +102,11 @@ router.get('/', async (req, res) => {
 // Get single event
 router.get('/:id', async (req, res) => {
   try {
+    // Validate if the ID is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid event ID format' });
+    }
+    
     const event = await Event.findById(req.params.id);
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });

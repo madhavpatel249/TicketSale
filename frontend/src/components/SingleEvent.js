@@ -29,13 +29,19 @@ const SingleEvent = () => {
       setError(null);
       setEvent(null);
       try {
+        console.log('Fetching event with ID:', id);
+        console.log('API URL:', `${API_BASE_URL}/api/events/${id}`);
         const res = await axios.get(`${API_BASE_URL}/api/events/${id}`);
+        console.log('API Response:', res.data);
         if (res.data && res.data._id) {
           setEvent(res.data);
         } else {
+          console.error('Event data is invalid:', res.data);
           setError('Event not found.');
         }
       } catch (err) {
+        console.error('Error fetching event:', err);
+        console.error('Error response:', err.response);
         setError('Could not load event details. Please try again later.');
       } finally {
         setLoading(false);
