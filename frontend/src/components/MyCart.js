@@ -44,13 +44,14 @@ function MyCart() {
     }
   }, [user, token]);
 
-  const handleQuantityChange = async (eventId, newQuantity) => {
+  const handleQuantityChange = async (eventId, ticketType, newQuantity) => {
     try {
-      await axios.put(
+      await axios.patch(
         `${API_BASE_URL}/api/users/${user.id}/cart-item`,
         {
           eventId,
-          quantity: newQuantity
+          ticketType: ticketType,
+          action: newQuantity > 0 ? 'increase' : 'decrease'
         },
         {
           headers: {
@@ -61,7 +62,7 @@ function MyCart() {
 
       setCart(prevCart =>
         prevCart.map(item =>
-          item.eventId === eventId ? { ...item, quantity: newQuantity } : item
+          item.eventId === eventId && item.type === ticketType ? { ...item, quantity: newQuantity } : item
         )
       );
     } catch (error) {
@@ -69,16 +70,16 @@ function MyCart() {
     }
   };
 
-  const handleRemoveItem = async (eventId) => {
+  const handleRemoveItem = async (eventId, ticketType) => {
     try {
       await axios.delete(`${API_BASE_URL}/api/users/${user.id}/cart-item`, {
-        data: { eventId },
+        data: { eventId, ticketType },
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      setCart(prevCart => prevCart.filter(item => item.eventId !== eventId));
+      setCart(prevCart => prevCart.filter(item => !(item.eventId === eventId && item.type === ticketType)));
     } catch (error) {
       console.error('Error removing item:', error);
     }
@@ -133,7 +134,7 @@ function MyCart() {
     try {
       for (const item of groupedCartItems) {
         await axios.post(
-          `${API_BASE_URL}/api/users/${user.id}/purchase`,
+          `${API_BASE_URL}/api/users/${user.id}/purchase-single`,
           {
             eventId: item.eventId,
             ticketType: item.type,
@@ -180,7 +181,7 @@ function MyCart() {
                       className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col sm:flex-row gap-4 items-center"
                     >
                       <button
-                        onClick={() => handleRemoveItem(item.eventId)}
+                        onClick={() => handleRemoveItem(item.eventId, item.type)}
                         className="absolute top-4 right-4 text-darkGray hover:text-warning transition-colors duration-200"
                       >
                         <Trash2 size={18} />
@@ -221,14 +222,14 @@ function MyCart() {
                         <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden">
                           <button
                             className="p-2 hover:bg-primary/10 text-primary transition-colors"
-                            onClick={() => handleQuantityChange(item.eventId, item.count - 1)}
+                            onClick={() => handleQuantityChange(item.eventId, item.type, item.count - 1)}
                           >
                             <Minus size={16} />
                           </button>
                           <span className="px-4 py-2 font-medium text-primary">{item.count}</span>
                           <button
                             className="p-2 hover:bg-primary/10 text-primary transition-colors"
-                            onClick={() => handleQuantityChange(item.eventId, item.count + 1)}
+                            onClick={() => handleQuantityChange(item.eventId, item.type, item.count + 1)}
                           >
                             <Plus size={16} />
                           </button>

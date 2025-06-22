@@ -62,7 +62,7 @@ const SingleEvent = () => {
         {
           eventId: id,
           quantity: 1,
-          type: type
+          ticketType: type
         },
         {
           headers: {
@@ -76,6 +76,7 @@ const SingleEvent = () => {
       setShowCartModal(true);
       setTimeout(() => setShowCartModal(false), 4000);
     } catch (error) {
+      console.error('Add to cart error:', error.response?.data || error.message);
       setShowError(true);
       setErrorMessage('An error occurred while adding to cart. Please try again later.');
       setTimeout(() => setShowError(false), 3000);
