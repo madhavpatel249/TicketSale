@@ -2,7 +2,7 @@ import React, { useState, useContext, useRef, useEffect } from 'react';
 import Navbar from '../common/Navbar';
 import EventGallery from './EventGallery';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../../context/AuthContext';
 import { useRipples } from 'use-ripples';
 import { Plus, Search } from 'lucide-react';
 import { motion } from 'framer-motion';

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import API_BASE_URL from '../../config/apiConfig';
+import API_BASE_URL from '../../../config/apiConfig';
 
 const EventGallery = () => {
   const [events, setEvents] = useState([]);

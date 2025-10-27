@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import Navbar from '../common/Navbar';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../../context/AuthContext';
 import { CalendarDays, MapPin, Ticket, User, AlertCircle } from 'lucide-react';
 import Confetti from 'react-confetti';
-import API_BASE_URL from '../../config/apiConfig';
+import API_BASE_URL from '../../../config/apiConfig';
 
 function Profile() {
   const { user, token } = useContext(AuthContext);

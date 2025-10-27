@@ -2,10 +2,10 @@ import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../common/Navbar';
-import { AuthContext } from '../../context/AuthContext';
-import { CartContext } from '../../context/CartContext';
+import { AuthContext } from '../../../context/AuthContext';
+import { CartContext } from '../../../context/CartContext';
 import { Calendar, MapPin, Clock, CheckCircle, X, ShoppingCart } from 'lucide-react';
-import API_BASE_URL from '../../config/apiConfig';
+import API_BASE_URL from '../../../config/apiConfig';
 
 const SingleEvent = () => {
   const { id } = useParams();
