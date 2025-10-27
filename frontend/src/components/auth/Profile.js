@@ -62,7 +62,8 @@ function Profile() {
       const event = ticket.event;
       if (!event) return;
 
-      const eventDate = new Date(event.date);
+      // Parse date properly to avoid timezone issues
+      const eventDate = new Date(event.date + 'T12:00:00'); // Add time to avoid UTC offset issues
       const monthYear = eventDate.toLocaleString('default', { month: 'long', year: 'numeric' });
 
       if (!groups[monthYear]) groups[monthYear] = [];
@@ -126,7 +127,7 @@ function Profile() {
                     <div className="space-y-2 text-darkGray">
                       <div className="flex items-center gap-2">
                         <CalendarDays size={16} />
-                        <span className="text-sm">{new Date(event.date).toLocaleDateString()}</span>
+                        <span className="text-sm">{new Date(event.date + 'T12:00:00').toLocaleDateString()}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin size={16} />

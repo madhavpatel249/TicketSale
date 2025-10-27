@@ -135,7 +135,7 @@ function BrowseEvents() {
                     <div className="space-y-2 text-darkGray">
                       <div className="flex items-center gap-2">
                         <Calendar size={16} />
-                        <span className="text-sm">{new Date(event.date).toLocaleDateString()}</span>
+                        <span className="text-sm">{new Date(event.date + 'T12:00:00').toLocaleDateString()}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin size={16} />

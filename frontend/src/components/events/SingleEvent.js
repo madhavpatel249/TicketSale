@@ -139,11 +139,11 @@ const SingleEvent = () => {
                 <div className="flex flex-col gap-3 mb-6">
                   <div className="flex items-center gap-2 text-darkGray">
                     <Calendar size={18} />
-                    <p>{event.date ? new Date(event.date).toLocaleDateString() : "No date"}</p>
+                    <p>{event.date ? new Date(event.date + 'T12:00:00').toLocaleDateString() : "No date"}</p>
                   </div>
                   <div className="flex items-center gap-2 text-darkGray">
                     <Clock size={18} />
-                    <p>{event.date ? new Date(event.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "No time"}</p>
+                    <p>{event.date ? new Date(event.date + 'T12:00:00').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "No time"}</p>
                   </div>
                   <div className="flex items-center gap-2 text-darkGray">
                     <MapPin size={18} />

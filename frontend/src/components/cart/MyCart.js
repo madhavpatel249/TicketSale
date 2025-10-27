@@ -226,7 +226,7 @@ function MyCart() {
                         <div className="flex items-center text-darkGray mt-2 gap-4">
                           <div className="flex items-center gap-1">
                             <CalendarDays size={16} />
-                            <span className="text-sm">{new Date(event?.date).toLocaleDateString()}</span>
+                            <span className="text-sm">{new Date((event?.date || '') + 'T12:00:00').toLocaleDateString()}</span>
                           </div>
                           <div className="flex items-center gap-1">
                             <MapPin size={16} />

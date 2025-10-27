@@ -56,7 +56,7 @@ const EventGallery = () => {
           </div>
           <div className="p-4">
             <h3 className="text-base font-medium text-primary mb-1 line-clamp-1">{event.title}</h3>
-            <p className="text-sm text-darkGray mb-1">{new Date(event.date).toLocaleDateString()}</p>
+            <p className="text-sm text-darkGray mb-1">{new Date(event.date + 'T12:00:00').toLocaleDateString()}</p>
             <p className="text-sm text-darkGray mb-3 line-clamp-1">{event.location}</p>
             <div className="text-sm px-4 py-2 bg-primary text-white rounded-md text-center hover:bg-primary/90 transition-colors duration-200">
               View Event
