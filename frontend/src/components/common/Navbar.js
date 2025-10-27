@@ -20,6 +20,11 @@ function Navbar() {
     }
   };
 
+  const handleLogoClick = () => {
+    // Always scroll to top when logo is clicked
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const navLinkClass = "px-4 py-2 rounded-md text-white hover:bg-secondary/80 transition-all duration-200 hover:scale-105";
   const buttonClass = "px-4 py-2 rounded-md text-white bg-warning hover:bg-warning/90 active:bg-warning/80 transition-all duration-200 hover:scale-105";
 
@@ -33,7 +38,7 @@ function Navbar() {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Link to="/" className="text-white text-xl font-semibold tracking-wide hover:text-accent transition-colors">
+          <Link to="/" onClick={handleLogoClick} className="text-white text-xl font-semibold tracking-wide hover:text-accent transition-colors">
             Evently
           </Link>
         </motion.div>

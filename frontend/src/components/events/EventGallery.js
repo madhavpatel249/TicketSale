@@ -70,7 +70,7 @@ const EventGallery = () => {
   return (
     <div className="mt-12 px-8 xl:px-16">
       <h2 className="text-2xl font-bold text-primary mb-6">
-        Sports Tickets Near You
+        Featured Events
       </h2>
       <div className="relative">
         {events.length > 5 && (

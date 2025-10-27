@@ -29,6 +29,12 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    // Navigate to home page and scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Use window.location for navigation since we can't use useNavigate in context
+    if (window.location.pathname !== '/') {
+      window.location.href = '/';
+    }
   };
 
   return (
