@@ -20,18 +20,27 @@ function MyCart() {
           }
         });
 
-        const eventIds = res.data.map(item => item.eventId);
-        const eventResponses = await Promise.all(
-          eventIds.map(id => axios.get(`${API_BASE_URL}/api/events/${id}`))
-        );
+        console.log('Cart API Response:', res.data); // Debug log
 
-        const eventMap = {};
-        eventResponses.forEach(response => {
-          eventMap[response.data._id] = response.data;
-        });
+        const cartData = res.data.cart || [];
+        console.log('Cart Data:', cartData); // Debug log
+        
+        const eventIds = cartData.map(item => item.eventId);
+        
+        if (eventIds.length > 0) {
+          const eventResponses = await Promise.all(
+            eventIds.map(id => axios.get(`${API_BASE_URL}/api/events/${id}`))
+          );
 
-        setEventMap(eventMap);
-        setCart(res.data);
+          const eventMap = {};
+          eventResponses.forEach(response => {
+            eventMap[response.data._id] = response.data;
+          });
+
+          setEventMap(eventMap);
+        }
+        
+        setCart(cartData);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching cart:', error);
@@ -46,7 +55,7 @@ function MyCart() {
 
   const handleQuantityChange = async (eventId, ticketType, newQuantity) => {
     try {
-      await axios.patch(
+      const res = await axios.patch(
         `${API_BASE_URL}/api/users/${user.id}/cart-item`,
         {
           eventId,
@@ -60,11 +69,8 @@ function MyCart() {
         }
       );
 
-      setCart(prevCart =>
-        prevCart.map(item =>
-          item.eventId === eventId && item.type === ticketType ? { ...item, quantity: newQuantity } : item
-        )
-      );
+      // Use the updated cart from the response
+      setCart(res.data.cart);
     } catch (error) {
       console.error('Error updating quantity:', error);
     }
@@ -72,14 +78,15 @@ function MyCart() {
 
   const handleRemoveItem = async (eventId, ticketType) => {
     try {
-      await axios.delete(`${API_BASE_URL}/api/users/${user.id}/cart-item`, {
+      const res = await axios.delete(`${API_BASE_URL}/api/users/${user.id}/cart-item`, {
         data: { eventId, ticketType },
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      setCart(prevCart => prevCart.filter(item => !(item.eventId === eventId && item.type === ticketType)));
+      // Use the updated cart from the response
+      setCart(res.data.cart);
     } catch (error) {
       console.error('Error removing item:', error);
     }
