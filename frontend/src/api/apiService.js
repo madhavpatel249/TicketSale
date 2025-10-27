@@ -1,5 +1,5 @@
 import axios from 'axios';
-import API_BASE_URL from '../../config/apiConfig.js';
+import API_BASE_URL from '../config/apiConfig';
 
 // Ensure API_BASE_URL doesn't have a trailing slash
 const baseURL = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;

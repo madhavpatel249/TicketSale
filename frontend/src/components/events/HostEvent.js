@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
 import { Calendar, MapPin, Image, Tag, Type, Upload, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AuthContext } from '../../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext';
 import API_BASE_URL from '../../../config/apiConfig';
-import apiClient from '../../../api/apiService';
+import apiClient from '../../api/apiService';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../common/Navbar';
 
