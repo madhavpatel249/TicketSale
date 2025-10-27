@@ -130,7 +130,12 @@ function MyCart() {
       groupedCart[key].count += 1;
     }
   });
-  const groupedCartItems = Object.values(groupedCart);
+  const groupedCartItems = Object.values(groupedCart).sort((a, b) => {
+    // Sort by event title alphabetically
+    const eventA = eventMap[a.eventId]?.title || 'Unnamed Event';
+    const eventB = eventMap[b.eventId]?.title || 'Unnamed Event';
+    return eventA.localeCompare(eventB);
+  });
 
   const eventGroups = {};
   groupedCartItems.forEach((item) => {

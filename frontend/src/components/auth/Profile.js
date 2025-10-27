@@ -23,8 +23,18 @@ function Profile() {
           }
         });
 
+        console.log('Tickets API Response:', res.data); // Debug log
+        const ticketsData = res.data.tickets || [];
+        console.log('Tickets Data:', ticketsData); // Debug log
+
+        if (ticketsData.length === 0) {
+          setTickets([]);
+          setLoading(false);
+          return;
+        }
+
         const ticketsWithEvents = await Promise.all(
-          res.data.map(async (ticket) => {
+          ticketsData.map(async (ticket) => {
             const eventRes = await axios.get(`${API_BASE_URL}/api/events/${ticket.eventId}`);
             return {
               ...ticket,
