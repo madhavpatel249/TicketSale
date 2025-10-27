@@ -9,7 +9,6 @@ import API_BASE_URL from '../../config/apiConfig';
 function Profile() {
   const { user, token } = useContext(AuthContext);
   const [tickets, setTickets] = useState([]);
-  const [eventsMap, setEventsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
@@ -60,7 +59,7 @@ function Profile() {
   const groupTicketsByMonth = () => {
     const groups = {};
     tickets.forEach(ticket => {
-      const event = eventsMap[ticket.eventId];
+      const event = ticket.event;
       if (!event) return;
 
       const eventDate = new Date(event.date);
