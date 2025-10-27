@@ -60,11 +60,17 @@ function Profile() {
     const groups = {};
     tickets.forEach(ticket => {
       const event = ticket.event;
-      if (!event) return;
+      if (!event || !ticket.purchasedAt) return;
 
       // Group by purchase date, not event date
       // Parse date properly to avoid timezone issues
       const purchaseDate = new Date(ticket.purchasedAt);
+      
+      // Check if date is valid
+      if (isNaN(purchaseDate.getTime())) {
+        console.error('Invalid date:', ticket.purchasedAt);
+        return;
+      }
       
       // Ensure we get the full month name
       const monthNames = ["January", "February", "March", "April", "May", "June",
