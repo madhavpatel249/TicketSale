@@ -12,7 +12,6 @@ Evently is a practice project inspired by Ticketmaster, built to strengthen my s
 - Highlights popular events by category (Music, Sports, etc.)
 - Scrollable top events section
 - "Create Event" button for logged-in hosts
-- Footer with quick links
 
 ###  Authentication
 - Secure login/register
@@ -26,10 +25,10 @@ Evently is a practice project inspired by Ticketmaster, built to strengthen my s
 
 ###  Event Detail Page
 - Shows event info: date, time, location, description
-- "Buy Ticket" button with featured events below
+- "Buy Ticket" button
 
 ###  Create Event (Hosts Only)
-- Form for title, description, date/time, location, price
+- Form for title, date/time, location, price
 - Upload event image
 
 ###  Checkout
@@ -39,7 +38,6 @@ Evently is a practice project inspired by Ticketmaster, built to strengthen my s
 
 ###  Dashboard
 - View purchased tickets
-- Hosts can manage created events
 - Clean, tile-based design
 
 ---
@@ -54,7 +52,7 @@ Evently is a practice project inspired by Ticketmaster, built to strengthen my s
 
 ---
 
-## 💻 Run Locally
+##  Run Locally
 
 Follow the steps below to run the project on your local machine.
 
