@@ -64,8 +64,15 @@ function Profile() {
 
       // Group by purchase date, not event date
       // Parse date properly to avoid timezone issues
-      const purchaseDate = new Date(ticket.purchasedAt + 'T12:00:00'); // Add time to avoid UTC offset issues
-      const monthYear = purchaseDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const purchaseDate = new Date(ticket.purchasedAt);
+      
+      // Ensure we get the full month name
+      const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const month = monthNames[purchaseDate.getMonth()];
+      const year = purchaseDate.getFullYear();
+      const monthYear = `${month} ${year}`;
 
       if (!groups[monthYear]) groups[monthYear] = [];
       groups[monthYear].push({ ticket, event });
