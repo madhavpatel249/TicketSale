@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import API_BASE_URL from '../../../config/apiConfig';
+import API_BASE_URL from '../../config/apiConfig';
 import { Link } from 'react-router-dom';
 import Navbar from '../common/Navbar';
 import { Search, Filter, Calendar, MapPin, Tag, RefreshCw } from 'lucide-react';

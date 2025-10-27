@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import { CalendarDays, MapPin, Ticket, Trash2, Plus, Minus, ShoppingCart } from 'lucide-react';
-import API_BASE_URL from '../../../config/apiConfig';
+import API_BASE_URL from '../../config/apiConfig';
 import Navbar from '../common/Navbar';
 
 function MyCart() {

@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import apiClient from '../../../api/apiService';
+import apiClient from '../../api/apiService';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Mail, Lock, UserPlus, LogIn } from 'lucide-react';
 import Navbar from '../common/Navbar';
