@@ -1,14 +1,17 @@
 {
-  "name": "backend",
+  "name": "ticket-sale-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Ticket Sale Service Backend API",
+  "main": "core/server.js",
   "scripts": {
+    "start": "node core/server.js",
+    "dev": "nodemon core/server.js",
+    "app": "node core/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["tickets", "events", "api", "backend"],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
@@ -18,7 +21,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.6.2",
     "multer": "^1.4.5-lts.1",
-    "sharp": "^0.33.2"
+    "sharp": "^0.33.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
