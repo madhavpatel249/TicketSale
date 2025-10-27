@@ -6,6 +6,7 @@ import API_BASE_URL from '../../config/apiConfig';
 
 const EventGallery = () => {
   const [events, setEvents] = useState([]);
+  const [featuredEvents, setFeaturedEvents] = useState([]);
   const scrollRef = useRef(null);
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -13,7 +14,17 @@ const EventGallery = () => {
     const fetchEvents = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/events`);
-        setEvents(response.data);
+        const allEvents = response.data;
+        setEvents(allEvents);
+        
+        // Filter sports events and shuffle them
+        const sportsEvents = allEvents.filter(event => event.category === "sports");
+        
+        // Shuffle array using Fisher-Yates algorithm
+        const shuffled = [...sportsEvents].sort(() => Math.random() - 0.5);
+        
+        // Take max 4 events
+        setFeaturedEvents(shuffled.slice(0, 4));
       } catch (error) {
         console.error("Error fetching events:", error);
       }
@@ -22,7 +33,7 @@ const EventGallery = () => {
   }, []);
 
   const getScrollAmount = () => {
-    const visibleCards = Math.min(events.length, 5); 
+    const visibleCards = Math.min(featuredEvents.length, 4); 
     return 260 * visibleCards;
   };
 
@@ -73,7 +84,7 @@ const EventGallery = () => {
         Featured Events
       </h2>
       <div className="relative">
-        {events.length > 5 && (
+        {featuredEvents.length > 4 && (
           <button
             className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-primary/90 text-white p-2 rounded-full shadow-sm hover:bg-primary hover:shadow-md transition-all duration-200"
             onClick={() => scroll("left")}
@@ -87,9 +98,9 @@ const EventGallery = () => {
           className="flex gap-6 overflow-x-scroll scroll-smooth p-4 rounded-lg"
           style={{ scrollSnapType: "x mandatory", overflow: "hidden" }}
         >
-          {events.filter(event => event.category === "sports").map((event) => renderEventCard(event))}
+          {featuredEvents.map((event) => renderEventCard(event))}
         </div>
-        {events.length > 5 && (
+        {featuredEvents.length > 4 && (
           <button
             className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-primary/90 text-white p-2 rounded-full shadow-sm hover:bg-primary hover:shadow-md transition-all duration-200"
             onClick={() => scroll("right")}
