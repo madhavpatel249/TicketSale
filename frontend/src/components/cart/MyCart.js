@@ -54,13 +54,22 @@ function MyCart() {
   }, [user, token]);
 
   const handleQuantityChange = async (eventId, ticketType, newQuantity) => {
+    // Find current count for this item
+    const currentCount = cart.filter(item => item.eventId === eventId && item.type === ticketType).length;
+    
+    // Prevent going below 1 - if trying to decrease from 1, remove item instead
+    if (newQuantity < 1) {
+      handleRemoveItem(eventId, ticketType);
+      return;
+    }
+
     try {
       const res = await axios.patch(
         `${API_BASE_URL}/api/users/${user.id}/cart-item`,
         {
           eventId,
           ticketType: ticketType,
-          action: newQuantity > 0 ? 'increase' : 'decrease'
+          action: newQuantity > currentCount ? 'increase' : 'decrease'
         },
         {
           headers: {
