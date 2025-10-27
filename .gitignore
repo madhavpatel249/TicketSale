@@ -8,21 +8,40 @@
 
 # Production
 /build
+/dist
 
-# Misc
-.DS_Store
+# Environment variables
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+# Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
 
-# Logs
-*.log
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# OS-specific
+# Misc
+.DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+.temp/

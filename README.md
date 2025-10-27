@@ -60,7 +60,7 @@ Follow the steps below to run the project on your local machine.
 
 ```bash
 # Clone the repo
-git clone https://github.com/yourusername/ticketsale.git
+git clone https://github.com/madhavpatel249/TicketSale.git
 
 # Install dependencies
 cd ticketsale
