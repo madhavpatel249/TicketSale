@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Calendar, MapPin, Image, Tag, Type, Upload, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../../context/AuthContext';
@@ -9,6 +9,7 @@ import Navbar from '../common/Navbar';
 
 function HostEvent() {
   const { user, token } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
@@ -24,7 +25,21 @@ function HostEvent() {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
-  const navigate = useNavigate();
+
+  // Check authentication and role on component mount
+  useEffect(() => {
+    if (!user || !token) {
+      // User is not logged in, redirect to login
+      navigate('/login');
+      return;
+    }
+    
+    if (user.role !== 'host') {
+      // User is logged in but not a host, redirect to login
+      navigate('/login');
+      return;
+    }
+  }, [user, token, navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

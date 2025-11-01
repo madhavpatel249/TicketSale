@@ -29,6 +29,20 @@ function HomePage() {
   });
 
   const handleHostEventClick = () => {
+    // Check if user is logged in and has host role
+    if (!user) {
+      // User is not logged in, redirect to login
+      navigate('/login');
+      return;
+    }
+    
+    if (user.role !== 'host') {
+      // User is logged in but not a host, redirect to login (or show error)
+      navigate('/login');
+      return;
+    }
+    
+    // User is logged in as host, allow navigation
     navigate('/host-event');
   };
 

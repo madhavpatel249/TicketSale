@@ -16,6 +16,21 @@ function Profile() {
 
   useEffect(() => {
     const fetchTickets = async () => {
+      // Check if user and token exist
+      if (!user || !token) {
+        setError('Please log in to view your tickets');
+        setLoading(false);
+        return;
+      }
+
+      // Check if user.id exists
+      if (!user.id) {
+        console.error('User ID is missing:', user);
+        setError('User information is incomplete. Please log in again.');
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await axios.get(`${API_BASE_URL}/api/users/${user.id}/tickets`, {
           headers: {
@@ -24,37 +39,64 @@ function Profile() {
         });
 
         console.log('Tickets API Response:', res.data); // Debug log
-        const ticketsData = res.data.tickets || [];
+        const ticketsData = res.data.tickets || res.data || [];
         console.log('Tickets Data:', ticketsData); // Debug log
 
         if (ticketsData.length === 0) {
           setTickets([]);
           setLoading(false);
+          setError('');
           return;
         }
 
+        // Fetch event details for each ticket
         const ticketsWithEvents = await Promise.all(
           ticketsData.map(async (ticket) => {
-            const eventRes = await axios.get(`${API_BASE_URL}/api/events/${ticket.eventId}`);
-            return {
-              ...ticket,
-              event: eventRes.data
-            };
+            try {
+              const eventRes = await axios.get(`${API_BASE_URL}/api/events/${ticket.eventId}`);
+              return {
+                ...ticket,
+                event: eventRes.data
+              };
+            } catch (eventError) {
+              console.error(`Error fetching event ${ticket.eventId}:`, eventError);
+              // Return ticket without event data if event fetch fails
+              return {
+                ...ticket,
+                event: null
+              };
+            }
           })
         );
 
-        setTickets(ticketsWithEvents);
+        // Filter out tickets with invalid events
+        const validTickets = ticketsWithEvents.filter(ticket => ticket.event !== null);
+        setTickets(validTickets);
         setLoading(false);
+        setError('');
       } catch (error) {
         console.error('Error fetching tickets:', error);
-        setError('Failed to load tickets');
+        if (error.response) {
+          // Server responded with error status
+          if (error.response.status === 401) {
+            setError('Your session has expired. Please log in again.');
+          } else if (error.response.status === 404) {
+            setError('User not found. Please log in again.');
+          } else {
+            setError(`Failed to load tickets: ${error.response.data?.error || error.message}`);
+          }
+        } else if (error.request) {
+          // Request was made but no response received
+          setError('Unable to connect to the server. Please check your internet connection.');
+        } else {
+          // Something else happened
+          setError(`Failed to load tickets: ${error.message}`);
+        }
         setLoading(false);
       }
     };
 
-    if (user && token) {
-      fetchTickets();
-    }
+    fetchTickets();
   }, [user, token]);
 
   const groupTicketsByMonth = () => {
