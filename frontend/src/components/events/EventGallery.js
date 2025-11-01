@@ -54,22 +54,22 @@ const EventGallery = () => {
   const renderEventCard = (event) => (
     <div key={event._id}>
       <Link to={`/events/${event._id}`} className="flex-shrink-0 w-[250px]">
-        <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 ease-in-out group">
-          <div className="w-full h-[140px] bg-gray-200 relative overflow-hidden">
+        <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 ease-in-out group card-hover">
+          <div className="w-full h-[160px] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
             <img
               src={event.image || ''}
               alt={event.title}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               onError={(e) => {
                 e.target.style.display = 'none';
               }}
             />
           </div>
           <div className="p-4">
-            <h3 className="text-base font-medium text-primary mb-1 line-clamp-1">{event.title}</h3>
-            <p className="text-sm text-darkGray mb-1">{new Date(event.date + 'T12:00:00').toLocaleDateString()}</p>
-            <p className="text-sm text-darkGray mb-3 line-clamp-1">{event.location}</p>
-            <div className="text-sm px-4 py-2 bg-primary text-white rounded-md text-center hover:bg-primary/90 transition-colors duration-200">
+            <h3 className="text-base font-semibold text-primary mb-2 line-clamp-1">{event.title}</h3>
+            <p className="text-sm text-darkGray mb-1 font-medium">{new Date(event.date + 'T12:00:00').toLocaleDateString()}</p>
+            <p className="text-sm text-darkGray mb-4 line-clamp-1">{event.location}</p>
+            <div className="text-sm px-4 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-lg text-center hover:shadow-md transition-all duration-200 font-medium">
               View Event
             </div>
           </div>
@@ -80,31 +80,30 @@ const EventGallery = () => {
 
   return (
     <div className="mt-12 px-8 xl:px-16">
-      <h2 className="text-2xl font-bold text-primary mb-6">
+      <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
         Featured Events
       </h2>
+      <p className="text-darkGray mb-8">Discover what's happening around you</p>
       <div className="relative">
         {featuredEvents.length > 4 && (
           <button
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-primary/90 text-white p-2 rounded-full shadow-sm hover:bg-primary hover:shadow-md transition-all duration-200"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-primary to-secondary text-white p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 z-10"
             onClick={() => scroll("left")}
-            style={{ zIndex: 10 }}
           >
             <ChevronLeft size={20} />
           </button>
         )}
         <div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-scroll scroll-smooth p-4 rounded-lg"
-          style={{ scrollSnapType: "x mandatory", overflow: "hidden" }}
+          className="flex gap-6 overflow-x-scroll scroll-smooth p-4 rounded-lg scrollbar-thin"
+          style={{ scrollSnapType: "x mandatory", overflowX: "auto", overflowY: "hidden" }}
         >
           {featuredEvents.map((event) => renderEventCard(event))}
         </div>
         {featuredEvents.length > 4 && (
           <button
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-primary/90 text-white p-2 rounded-full shadow-sm hover:bg-primary hover:shadow-md transition-all duration-200"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-primary to-secondary text-white p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 z-10"
             onClick={() => scroll("right")}
-            style={{ zIndex: 10 }}
           >
             <ChevronRight size={20} />
           </button>

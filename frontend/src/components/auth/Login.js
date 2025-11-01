@@ -49,11 +49,16 @@ function Login() {
   return (
     <>
       <Navbar />
-      <div className="flex items-center justify-center min-h-screen bg-lightGray pt-24 pb-12">
-        <div className="bg-white p-8 rounded-xl shadow-sm w-full max-w-md">
-          <h2 className="text-2xl font-bold text-center text-primary mb-8">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-primary/5 via-secondary/5 to-lightGray pt-24 pb-12 px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 w-full max-w-md"
+        >
+          <h2 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
             Welcome Back
           </h2>
+          <p className="text-center text-darkGray mb-8">Sign in to your account</p>
           
           <AnimatePresence mode="wait">
             {error && (
@@ -72,7 +77,7 @@ function Login() {
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="username" className="flex items-center gap-2 text-sm font-medium text-primary">
+              <label htmlFor="username" className="flex items-center gap-2 text-sm font-semibold text-primary">
                 <User size={16} />
                 Username
               </label>
@@ -82,13 +87,13 @@ function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray placeholder-gray-400"
                 placeholder="Enter your username"
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="flex items-center gap-2 text-sm font-medium text-primary">
+              <label htmlFor="password" className="flex items-center gap-2 text-sm font-semibold text-primary">
                 <Lock size={16} />
                 Password
               </label>
@@ -98,16 +103,17 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray placeholder-gray-400"
                 placeholder="Enter your password"
               />
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.15 }}
               type="submit"
-              className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 font-medium shadow-sm hover:shadow-md"
+              className="w-full py-3.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-shadow duration-150 font-semibold shadow-md"
             >
               Log In
             </motion.button>
@@ -118,13 +124,14 @@ function Login() {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.15 }}
               onClick={handleSignupClick}
-              className="text-secondary hover:text-secondary/80 font-medium transition-colors duration-200"
+              className="text-secondary hover:text-primary font-semibold transition-colors duration-150"
             >
               Sign Up
             </motion.button>
           </p>
-        </div>
+        </motion.div>
       </div>
     </>
   );

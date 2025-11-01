@@ -130,22 +130,32 @@ function HostEvent() {
   return (
     <>
       <Navbar />
-      <div className="flex justify-center items-center min-h-screen bg-lightGray pt-24 pb-12">
-        <div className="w-full max-w-xl p-8 space-y-8 bg-white rounded-xl shadow-sm">
-          <h2 className="text-3xl font-bold text-center text-primary">
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-b from-primary/5 via-secondary/5 to-lightGray pt-24 pb-12 px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-lg p-8 space-y-6 bg-white rounded-2xl shadow-xl border border-gray-100"
+        >
+          <h2 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
             Host an Event
           </h2>
+          <p className="text-center text-darkGray mb-8">Create and share your event with the world</p>
 
           {showError && (
-            <div className="mb-4 p-2 bg-red-50 text-red-600 rounded-lg flex items-center gap-2">
-              <span className="text-sm">{errorMessage}</span>
-            </div>
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-4 p-4 bg-red-50 text-red-700 rounded-xl border-2 border-red-200 flex items-center gap-3 shadow-md"
+            >
+              <AlertCircle size={20} />
+              <span className="font-medium">{errorMessage}</span>
+            </motion.div>
           )}
 
           <form onSubmit={onSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label htmlFor="title" className="flex items-center gap-1 text-sm font-medium text-primary">
+                <label htmlFor="title" className="flex items-center gap-2 text-sm font-semibold text-primary">
                   <Type size={16} />
                   Event Title
                 </label>
@@ -156,13 +166,13 @@ function HostEvent() {
                   value={formData.title}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray placeholder-gray-400"
                   placeholder="Enter event title"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="date" className="flex items-center gap-1 text-sm font-medium text-primary">
+                <label htmlFor="date" className="flex items-center gap-2 text-sm font-semibold text-primary">
                   <Calendar size={16} />
                   Event Date
                 </label>
@@ -173,14 +183,14 @@ function HostEvent() {
                   value={formData.date}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray"
                 />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label htmlFor="location" className="flex items-center gap-1 text-sm font-medium text-primary">
+                <label htmlFor="location" className="flex items-center gap-2 text-sm font-semibold text-primary">
                   <MapPin size={16} />
                   Location
                 </label>
@@ -191,13 +201,13 @@ function HostEvent() {
                   value={formData.location}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray placeholder-gray-400"
                   placeholder="Enter event location"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="category" className="flex items-center gap-1 text-sm font-medium text-primary">
+                <label htmlFor="category" className="flex items-center gap-2 text-sm font-semibold text-primary">
                   <Tag size={16} />
                   Category
                 </label>
@@ -207,7 +217,7 @@ function HostEvent() {
                   value={formData.category}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray"
                 >
                   <option value="">Select a category</option>
                   <option value="concert">Concert</option>
@@ -218,7 +228,7 @@ function HostEvent() {
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-1 text-sm font-medium text-primary">
+              <label className="flex items-center gap-2 text-sm font-semibold text-primary">
                 <Image size={16} />
                 Event Image
               </label>
@@ -232,36 +242,41 @@ function HostEvent() {
                 />
                 <label
                   htmlFor="image"
-                  className="flex items-center justify-center gap-2 w-full px-4 py-3 border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-primary/50 transition-all duration-200"
+                  className="flex items-center justify-center gap-2 w-full px-4 py-4 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-primary hover:bg-primary/5 transition-all duration-200 bg-gray-50"
                 >
-                  <Upload size={18} className="text-gray-400" />
-                  <span className="text-gray-500">
+                  <Upload size={20} className="text-primary" />
+                  <span className="text-darkGray font-medium">
                     {uploading ? 'Uploading...' : 'Click to upload image'}
                   </span>
                 </label>
               </div>
               {imagePreview && (
-                <div className="mt-3">
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="mt-4 rounded-xl overflow-hidden shadow-md border-2 border-gray-200"
+                >
                   <img
                     src={imagePreview}
                     alt="Event preview"
-                    className="w-full h-40 object-cover rounded-lg"
+                    className="w-full h-48 object-cover"
                   />
-                </div>
+                </motion.div>
               )}
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.15 }}
               type="submit"
               disabled={uploading}
-              className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 font-medium shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-shadow duration-150 font-bold shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {uploading ? 'Uploading...' : 'Host Event'}
             </motion.button>
           </form>
-        </div>
+        </motion.div>
       </div>
 
       <AnimatePresence>

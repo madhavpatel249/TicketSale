@@ -60,11 +60,16 @@ function Signup() {
   return (
     <>
       <Navbar />
-      <div className="flex items-center justify-center min-h-screen bg-lightGray pt-24 pb-8">
-        <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-lg">
-          <h2 className="text-xl font-bold text-center text-primary mb-4">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-primary/5 via-secondary/5 to-lightGray pt-24 pb-12 px-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 w-full max-w-lg"
+        >
+          <h2 className="text-3xl font-bold text-center mb-2 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
             Create an Account
           </h2>
+          <p className="text-center text-darkGray mb-8">Join Evently and start discovering events</p>
 
           <AnimatePresence mode="wait">
             {error && (
@@ -81,10 +86,10 @@ function Signup() {
             )}
           </AnimatePresence>
 
-          <form onSubmit={handleSignup} className="space-y-3">
-            <div className="grid grid-cols-1 gap-4">
+          <form onSubmit={handleSignup} className="space-y-5">
+            <div className="grid grid-cols-1 gap-5">
               <div className="space-y-2">
-                <label htmlFor="username" className="flex items-center gap-2 text-sm font-medium text-primary">
+                <label htmlFor="username" className="flex items-center gap-2 text-sm font-semibold text-primary">
                   <User size={16} />
                   Username
                 </label>
@@ -94,13 +99,13 @@ function Signup() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray placeholder-gray-400"
                   placeholder="Enter username"
                 />
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-primary">
+                <label htmlFor="email" className="flex items-center gap-2 text-sm font-semibold text-primary">
                   <Mail size={16} />
                   Email
                 </label>
@@ -110,14 +115,14 @@ function Signup() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200 text-base"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray placeholder-gray-400"
                   placeholder="Enter email"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="flex items-center gap-2 text-sm font-medium text-primary">
+              <label htmlFor="password" className="flex items-center gap-2 text-sm font-semibold text-primary">
                 <Lock size={16} />
                 Password
               </label>
@@ -127,17 +132,17 @@ function Signup() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-200 text-darkGray placeholder-gray-400"
                 placeholder="Enter password"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-medium text-primary">
+              <label className="flex items-center gap-2 text-sm font-semibold text-primary">
                 <UserPlus size={16} />
                 Role
               </label>
-              <div className="flex items-center gap-6 p-4 bg-gray-50 rounded-lg border border-gray-100">
+              <div className="flex items-center gap-6 p-4 bg-gray-50 rounded-xl border-2 border-gray-200">
                 <label className="flex items-center gap-3 cursor-pointer group">
                   <input
                     type="radio"
@@ -148,7 +153,7 @@ function Signup() {
                     onChange={(e) => setRole(e.target.value)}
                     className="w-4 h-4 text-primary focus:ring-primary border-gray-300"
                   />
-                  <span className="text-darkGray group-hover:text-primary transition-colors duration-200">Host</span>
+                  <span className="text-darkGray font-medium group-hover:text-primary transition-colors duration-200">Host</span>
                 </label>
 
                 <label className="flex items-center gap-3 cursor-pointer group">
@@ -161,35 +166,42 @@ function Signup() {
                     onChange={(e) => setRole(e.target.value)}
                     className="w-4 h-4 text-primary focus:ring-primary border-gray-300"
                   />
-                  <span className="text-darkGray group-hover:text-primary transition-colors duration-200">Attendee</span>
+                  <span className="text-darkGray font-medium group-hover:text-primary transition-colors duration-200">Attendee</span>
                 </label>
               </div>
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
+              whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.15 }}
               type="submit"
-              className="w-full py-3 bg-primary text-white rounded-lg hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 font-medium shadow-sm hover:shadow-md flex items-center justify-center gap-2 mt-2"
+              disabled={loading}
+              className="w-full py-3.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-shadow duration-150 font-semibold shadow-md flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <UserPlus size={18} />
-              Sign Up
+              {loading ? 'Creating Account...' : (
+                <>
+                  <UserPlus size={18} />
+                  Sign Up
+                </>
+              )}
             </motion.button>
           </form>
 
-          <p className="text-center text-sm text-darkGray mt-5">
+          <p className="text-center text-sm text-darkGray mt-6">
             Already have an account?{' '}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.15 }}
               onClick={handleLoginClick}
-              className="text-secondary hover:text-secondary/80 font-medium transition-colors duration-200 flex items-center gap-1"
+              className="text-secondary hover:text-primary font-semibold transition-colors duration-150 flex items-center gap-1 inline-flex"
             >
               <LogIn size={16} />
               Click here to Login
             </motion.button>
           </p>
-        </div>
+        </motion.div>
       </div>
     </>
   );

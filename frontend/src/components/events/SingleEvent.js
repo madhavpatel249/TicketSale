@@ -5,6 +5,7 @@ import Navbar from '../common/Navbar';
 import { AuthContext } from '../../context/AuthContext';
 import { CartContext } from '../../context/CartContext';
 import { Calendar, MapPin, Clock, CheckCircle, X, ShoppingCart } from 'lucide-react';
+import { motion } from 'framer-motion';
 import API_BASE_URL from '../../config/apiConfig';
 
 const SingleEvent = () => {
@@ -85,38 +86,59 @@ const SingleEvent = () => {
 
   if (loading) {
     return (
-      <div className="pt-24 text-center text-primary text-lg">
-        Loading event details...
+      <div className="min-h-screen bg-gradient-to-b from-primary/5 via-secondary/5 to-lightGray pt-24 flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-primary text-xl font-semibold mb-2">Loading event details...</div>
+          <div className="text-darkGray">Please wait</div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="pt-24 text-center text-red-500 text-lg">
-        {error}
+      <div className="min-h-screen bg-gradient-to-b from-primary/5 via-secondary/5 to-lightGray pt-24 flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-2xl shadow-xl border border-gray-100 max-w-md">
+          <div className="text-warning text-xl font-semibold mb-2">{error}</div>
+          <button 
+            onClick={() => window.history.back()}
+            className="mt-4 px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-shadow duration-150 font-semibold"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
 
   if (!event) {
     return (
-      <div className="pt-24 text-center text-primary text-lg">
-        No event found.
+      <div className="min-h-screen bg-gradient-to-b from-primary/5 via-secondary/5 to-lightGray pt-24 flex items-center justify-center">
+        <div className="text-center bg-white p-8 rounded-2xl shadow-xl border border-gray-100 max-w-md">
+          <div className="text-primary text-xl font-semibold mb-2">No event found.</div>
+          <button 
+            onClick={() => window.history.back()}
+            className="mt-4 px-6 py-2.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg transition-shadow duration-150 font-semibold"
+          >
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-lightGray pt-24">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-secondary/5 to-lightGray pt-24">
       <Navbar scrolled={true} />
-      <div className="max-w-5xl mx-auto px-4 py-10">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+        >
           <div className="flex flex-col lg:flex-row gap-8 items-stretch">
-            <div className="w-full lg:w-2/3 rounded-xl overflow-hidden border border-gray-100">
-              <div
-                className="relative"
-              >
+            <div className="w-full lg:w-2/3 rounded-xl overflow-hidden border border-gray-100 shadow-lg">
+              <div className="relative aspect-video">
                 {!imageError && event.image ? (
                   <img
                     src={event.image}
@@ -125,70 +147,70 @@ const SingleEvent = () => {
                     onError={() => setImageError(true)}
                   />
                 ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <p className="text-gray-500">No image available</p>
+                  <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                    <p className="text-gray-500 font-medium">No image available</p>
                   </div>
                 )}
               </div>
             </div>
-            <div ref={ticketRef} className="w-full lg:w-1/3 flex flex-col space-y-6 p-6">
+            <div ref={ticketRef} className="w-full lg:w-1/3 flex flex-col space-y-6 p-6 lg:p-8">
               <div>
-                <h1 className="text-3xl font-bold text-primary mb-4">
+                <h1 className="text-3xl lg:text-4xl font-bold text-primary mb-6">
                   {event.title || "No title"}
                 </h1>
-                <div className="flex flex-col gap-3 mb-6">
-                  <div className="flex items-center gap-2 text-darkGray">
-                    <Calendar size={18} />
-                    <p>{event.date ? new Date(event.date + 'T12:00:00').toLocaleDateString() : "No date"}</p>
+                <div className="flex flex-col gap-4 mb-6">
+                  <div className="flex items-center gap-3 text-darkGray bg-gray-50 p-3 rounded-lg">
+                    <Calendar size={18} className="text-primary" />
+                    <p className="font-medium">{event.date ? new Date(event.date + 'T12:00:00').toLocaleDateString() : "No date"}</p>
                   </div>
-                  <div className="flex items-center gap-2 text-darkGray">
-                    <Clock size={18} />
-                    <p>{event.date ? new Date(event.date + 'T12:00:00').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "No time"}</p>
+                  <div className="flex items-center gap-3 text-darkGray bg-gray-50 p-3 rounded-lg">
+                    <Clock size={18} className="text-primary" />
+                    <p className="font-medium">{event.date ? new Date(event.date + 'T12:00:00').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "No time"}</p>
                   </div>
-                  <div className="flex items-center gap-2 text-darkGray">
-                    <MapPin size={18} />
-                    <p>{event.location || "No location"}</p>
+                  <div className="flex items-center gap-3 text-darkGray bg-gray-50 p-3 rounded-lg">
+                    <MapPin size={18} className="text-primary" />
+                    <p className="font-medium">{event.location || "No location"}</p>
                   </div>
                 </div>
-                <hr className="my-6 border-gray-100" />
+                <hr className="my-6 border-gray-200" />
                 <p className="text-darkGray leading-relaxed mb-6">
                   {event.description || "No description available."}
                 </p>
               </div>
               <div>
-                <h2 className="text-2xl font-semibold text-primary mb-4">
+                <h2 className="text-2xl font-bold text-primary mb-6">
                   Buy Tickets
                 </h2>
-                <div className="border border-gray-100 rounded-xl p-5 bg-white shadow-sm transition-all duration-200 hover:shadow-md mb-4">
+                <div className="border border-gray-100 rounded-xl p-6 bg-white shadow-sm transition-all duration-200 hover:shadow-md mb-4">
                   <p className="font-medium text-lg text-primary">General Admission</p>
                   <p className="text-sm text-darkGray mb-3">Access to main event area</p>
                   <button
                     onClick={() => handleAddToCart('general')}
-                    className={`w-full px-4 py-2.5 rounded-lg font-medium text-sm flex justify-center items-center transition-all duration-200
+                    className={`w-full px-4 py-3 rounded-xl font-semibold text-sm flex justify-center items-center transition-all duration-150 shadow-md hover:shadow-lg
                       ${clickedButton === 'general'
-                        ? 'bg-secondary text-white'
-                        : 'bg-primary text-white hover:bg-primary/90'}`}
+                        ? 'bg-gradient-to-r from-secondary to-accent text-white'
+                        : 'bg-gradient-to-r from-primary to-secondary text-white hover:scale-[1.02]'}`}
                   >
-                    {clickedButton === 'general' ? '✔ Added' : 'Add to Cart'}
+                    {clickedButton === 'general' ? '✔ Added to Cart' : 'Add to Cart'}
                   </button>
                 </div>
-                <div className="border border-gray-100 rounded-xl p-5 bg-white shadow-sm transition-all duration-200 hover:shadow-md">
+                <div className="border border-gray-100 rounded-xl p-6 bg-white shadow-sm transition-all duration-200 hover:shadow-md">
                   <p className="font-medium text-lg text-primary">VIP Ticket</p>
                   <p className="text-sm text-darkGray mb-3">Front row & backstage access</p>
                   <button
                     onClick={() => handleAddToCart('vip')}
-                    className={`w-full px-4 py-2.5 rounded-lg font-medium text-sm flex justify-center items-center transition-all duration-200
+                    className={`w-full px-4 py-3 rounded-xl font-semibold text-sm flex justify-center items-center transition-all duration-150 shadow-md hover:shadow-lg
                       ${clickedButton === 'vip'
-                        ? 'bg-secondary text-white'
-                        : 'bg-primary text-white hover:bg-primary/90'}`}
+                        ? 'bg-gradient-to-r from-secondary to-accent text-white'
+                        : 'bg-gradient-to-r from-primary to-secondary text-white hover:scale-[1.02]'}`}
                   >
-                    {clickedButton === 'vip' ? '✔ Added' : 'Add to Cart'}
+                    {clickedButton === 'vip' ? '✔ Added to Cart' : 'Add to Cart'}
                   </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Cart Success Modal */}

@@ -4,6 +4,7 @@ import API_BASE_URL from '../../config/apiConfig';
 import { Link } from 'react-router-dom';
 import Navbar from '../common/Navbar';
 import { Search, Filter, Calendar, MapPin, Tag, RefreshCw } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 function BrowseEvents() {
   const [events, setEvents] = useState([]);
@@ -40,14 +41,24 @@ function BrowseEvents() {
   };
 
   return (
-    <div className="min-h-screen bg-lightGray pt-24 pb-12">
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 via-secondary/5 to-lightGray pt-24 pb-12">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center text-primary mb-10 animate-fade-in">
+        <motion.h2 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl md:text-5xl font-bold text-center mb-4 bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent"
+        >
           Browse All Events
-        </h2>
+        </motion.h2>
+        <p className="text-center text-darkGray mb-10">Discover amazing events happening near you</p>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm mb-10 animate-fade-in">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-10"
+        >
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex-1 min-w-[200px]">
               <label className="flex items-center gap-2 text-sm font-medium text-primary mb-2">
@@ -104,7 +115,7 @@ function BrowseEvents() {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {loading ? (
           <div className="text-center text-darkGray animate-fade-in">
@@ -115,10 +126,16 @@ function BrowseEvents() {
             No events found matching your criteria.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
-            {filteredEvents.map(event => (
-              <Link to={`/events/${event._id}`} key={event._id}>
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 overflow-hidden group">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredEvents.map((event, index) => (
+              <motion.div
+                key={event._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+              <Link to={`/events/${event._id}`}>
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200 overflow-hidden group card-hover">
                   <div className="w-full h-48 bg-gray-100 relative overflow-hidden">
                     <img
                       src={event.image || ''}
@@ -153,6 +170,7 @@ function BrowseEvents() {
                   </div>
                 </div>
               </Link>
+              </motion.div>
             ))}
           </div>
         )}
